@@ -1,0 +1,7 @@
+[
+  { "type": "HOST", "name": "Ведущий мероприятия", "unit": "мероприятие" },
+  { "type": "PHOTOGRAPHY", "name": "Фотограф", "unit": "час" },
+  { "type": "DECOR", "name": "Оформление зала", "unit": "мероприятие" },
+  { "type": "MUSIC", "name": "Диджей", "unit": "час" },
+  { "type": "CATERING", "name": "Банкетное меню", "unit": "гость" }
+]
