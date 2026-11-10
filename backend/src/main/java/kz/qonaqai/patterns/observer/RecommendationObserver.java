@@ -15,6 +15,6 @@ public class RecommendationObserver implements EventObserver {
     @Override public void onEventChanged(EventChanged change) {
         var event=change.event();
         int count=venues.find("",event.guests(),event.strategy(),event.budget()).size();
-        notifications.save(new Notification(event.id(),"Подбор для «"+event.title()+"» обновлён. Подходящих площадок: "+count+". Цены уточняются у площадки."));
+        notifications.save(new Notification(event,"Подбор для «"+event.title()+"» обновлён. Подходящих площадок: "+count+". Цены уточняются у площадки."));
     }
 }

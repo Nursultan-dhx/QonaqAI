@@ -1,6 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap");
 :root {
-  font-family: "Golos Text", Arial, sans-serif;
+  font-family: "Times New Roman", Georgia, serif;
   color: #253b34;
   background: #f7f8f5;
   font-synthesis: none;
@@ -71,7 +70,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Manrope", "Golos Text", Arial, sans-serif;
+  font-family: "Times New Roman", Georgia, serif;
 }
 img {
   display: block;
@@ -111,7 +110,7 @@ html {
   gap: 66px;
 }
 .brand {
-  font-family: Manrope, Arial, sans-serif;
+  font-family: "Times New Roman", Georgia, serif;
   font-size: 25px;
   font-weight: 800;
   letter-spacing: -1.2px;
@@ -129,7 +128,7 @@ html {
   background: var(--accent);
   color: white;
   font-size: 35px;
-  font-family: Georgia, serif;
+  font-family: "Times New Roman", Georgia, serif;
   font-weight: 400;
   line-height: 1;
   align-items: center;
@@ -259,13 +258,6 @@ html {
   align-items: center;
   gap: 8px;
 }
-.live-dot {
-  width: 6px;
-  height: 6px;
-  background: #829c77;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px #eaf0e5;
-}
 .hero h1 {
   font-size: 42px;
   font-weight: 600;
@@ -273,11 +265,6 @@ html {
   letter-spacing: -1.7px;
   margin: 22px 0 18px;
   white-space: nowrap;
-}
-.hero h1 em {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 400;
-  color: #7f9675;
 }
 .hero-copy > p {
   font-size: 12px;
@@ -293,25 +280,6 @@ html {
   gap: 15px;
   border-bottom: 1px solid #c7d2c2;
   padding-bottom: 8px;
-}
-.hero-meta {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-top: 33px;
-  font-size: 10px;
-  color: #949c93;
-}
-.hero-meta span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.hero-meta i {
-  height: 3px;
-  width: 3px;
-  background: #c1c9bd;
-  border-radius: 50%;
 }
 .hero-visual {
   height: 310px;
@@ -337,13 +305,8 @@ html {
   color: white;
   right: 26px;
 }
-.photo-overline {
-  font-size: 8px;
-  letter-spacing: 1.6px;
-  color: #d5ddcf;
-}
 .hero-photo-label strong {
-  font-family: Manrope, sans-serif;
+  font-family: "Times New Roman", Georgia, serif;
   display: block;
   font-size: 22px;
   font-weight: 500;
@@ -356,16 +319,6 @@ html {
   justify-content: space-between;
   font-size: 10px;
   color: #e5eadf;
-}
-.image-corner-note {
-  position: absolute;
-  right: 17px;
-  top: 17px;
-  font-size: 9px;
-  background: #fffffff0;
-  color: #53634e;
-  padding: 8px 12px;
-  border-radius: 20px;
 }
 .workspace {
   display: grid;
@@ -408,13 +361,6 @@ html {
   font-weight: 600;
   margin: 5px 0 0;
   letter-spacing: -0.5px;
-}
-.planner-intro {
-  font-size: 10px;
-  color: #90978d;
-  line-height: 1.75;
-  margin-top: 15px;
-  margin-bottom: 21px;
 }
 .planner label {
   display: block;
@@ -567,9 +513,6 @@ html {
   font-weight: 600;
   letter-spacing: -0.9px;
   margin: 7px 0 0;
-}
-.catalog-title h2 span {
-  color: #9caf8c;
 }
 .result-count {
   font-size: 10px;
@@ -741,7 +684,7 @@ html {
   padding: 0;
   text-align: left;
   background: none;
-  font-family: Manrope, Arial, sans-serif;
+  font-family: "Times New Roman", Georgia, serif;
   font-size: 15px;
   line-height: 1.45;
   font-weight: 650;
@@ -808,16 +751,16 @@ html {
   background: #496b43;
   color: white;
 }
-.catalog-footer {
+.catalog-note {
   display: flex;
   gap: 8px;
   color: #a1aa98;
   margin-top: 19px;
 }
-.catalog-footer svg {
+.catalog-note svg {
   margin-top: 1px;
 }
-.catalog-footer p {
+.catalog-note p {
   font-size: 9px;
   line-height: 1.7;
   margin: 0;
@@ -849,27 +792,6 @@ html {
 }
 .catalog-empty .button {
   margin-top: 10px;
-}
-.site-footer {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-  border-top: 1px solid var(--line);
-  margin-top: 52px;
-  padding: 27px 0 35px;
-  color: #a0aa98;
-}
-.footer-brand {
-  font-size: 18px;
-  color: #4d6441;
-}
-.site-footer p {
-  font-size: 9px;
-  margin: 0;
-}
-.site-footer > span {
-  font-size: 8px;
-  margin-left: auto;
 }
 .selected-venue {
   display: flex;
@@ -1272,7 +1194,7 @@ html {
 .detail-facts strong {
   display: block;
   font-size: 23px;
-  font-family: Manrope, Arial, sans-serif;
+  font-family: "Times New Roman", Georgia, serif;
   font-weight: 500;
 }
 .detail-facts span {
@@ -1509,9 +1431,6 @@ html {
   .hero-visual {
     height: 285px;
   }
-  .hero-meta {
-    font-size: 9px;
-  }
   .workspace {
     grid-template-columns: 270px minmax(0, 1fr);
     gap: 22px;
@@ -1560,11 +1479,6 @@ html {
   }
   .city-label {
     display: none;
-  }
-  .site-footer > span {
-    max-width: 180px;
-    line-height: 1.6;
-    text-align: right;
   }
   .saved-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1629,20 +1543,6 @@ html {
   .hero-photo-label strong {
     font-size: 19px;
   }
-  .image-corner-note {
-    font-size: 7px;
-    padding: 6px 9px;
-    right: 12px;
-    top: 12px;
-  }
-  .hero-meta {
-    gap: 6px;
-    font-size: 7px;
-    margin-top: 25px;
-  }
-  .hero-meta svg {
-    width: 11px;
-  }
   .hero-link {
     font-size: 10px;
     gap: 10px;
@@ -1669,9 +1569,6 @@ html {
     width: 32px;
     height: 36px;
     border-radius: 8px;
-  }
-  .planner-intro {
-    font-size: 9px;
   }
   .planner label {
     font-size: 9px;
@@ -1718,9 +1615,6 @@ html {
     font-size: 8px;
     padding: 5px 7px;
   }
-  .catalog-title .eyebrow {
-    font-size: 7px;
-  }
   .venue-grid {
     grid-template-columns: 1fr;
     gap: 18px;
@@ -1749,17 +1643,8 @@ html {
     font-size: 9px;
     gap: 16px;
   }
-  .catalog-footer p {
+  .catalog-note p {
     font-size: 8px;
-  }
-  .site-footer {
-    gap: 15px;
-  }
-  .site-footer p {
-    font-size: 8px;
-  }
-  .site-footer > span {
-    font-size: 7px;
   }
   .events-heading h1 {
     font-size: 29px;
@@ -1840,14 +1725,6 @@ html {
   .hero-link {
     font-size: 11px;
   }
-  .hero-meta {
-    margin-top: 23px;
-    font-size: 9px;
-    gap: 12px;
-  }
-  .hero-meta svg {
-    width: 13px;
-  }
   .hero-visual {
     height: 220px;
     border-radius: 12px 38px 12px 12px;
@@ -1859,14 +1736,8 @@ html {
     bottom: 19px;
     left: 20px;
   }
-  .photo-overline {
-    font-size: 7px;
-  }
   .hero-photo-label > span:last-child {
     font-size: 9px;
-  }
-  .image-corner-note {
-    font-size: 8px;
   }
   .workspace {
     display: flex;
@@ -1887,11 +1758,6 @@ html {
   .section-icon {
     width: 39px;
     height: 43px;
-  }
-  .planner-intro {
-    font-size: 11px;
-    margin: 15px 0 19px;
-    max-width: 260px;
   }
   .eyebrow.small {
     font-size: 8px;
@@ -1965,9 +1831,6 @@ html {
   }
   .catalog-title h2 {
     font-size: 25px;
-  }
-  .catalog-title .eyebrow {
-    font-size: 8px;
   }
   .catalog-title {
     margin-bottom: 18px;
@@ -2050,25 +1913,8 @@ html {
     right: 13px;
     top: 13px;
   }
-  .catalog-footer p {
+  .catalog-note p {
     font-size: 9px;
-  }
-  .site-footer {
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 35px;
-    padding: 23px 0 28px;
-  }
-  .site-footer p {
-    margin-left: auto;
-    font-size: 8px;
-  }
-  .site-footer > span {
-    max-width: 100%;
-    width: 100%;
-    text-align: left;
-    font-size: 8px;
-    margin-top: 3px;
   }
   .notification-panel {
     position: fixed;
@@ -2270,4 +2116,23 @@ html {
     transition: none !important;
     animation: none !important;
   }
+}
+
+.main-shell {
+  padding-bottom: 48px;
+}
+.hero h1 {
+  white-space: normal;
+}
+.planner-heading {
+  margin-bottom: 20px;
+}
+.profile strong {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sign-out {
+  flex-shrink: 0;
 }

@@ -19,9 +19,14 @@ public class EventPlan {
     @Enumerated(EnumType.STRING) private StrategyId strategy;
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="venue_id")
     @com.fasterxml.jackson.annotation.JsonIgnore private Venue venue;
+    @Column(updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore private Long ownerId;
     private Instant updatedAt;
     protected EventPlan() {}
-    public EventPlan(EventDraft request, Venue venue) { update(request, venue); }
+    public EventPlan(EventDraft request, Venue venue, Long ownerId) {
+        this.ownerId = ownerId;
+        update(request, venue);
+    }
     public void update(EventDraft request, Venue venue) {
         title = request.title().strip(); type = request.type(); date = request.date();
         guests = request.guests(); budget = request.budget();
@@ -31,6 +36,7 @@ public class EventPlan {
     @com.fasterxml.jackson.annotation.JsonProperty("venueId")
     public Long venueId() { return venue == null ? null : venue.id(); }
     public Long id() { return id; }
+    public Long ownerId() { return ownerId; }
     public String title() { return title; }
     public int guests() { return guests; }
     public BigDecimal budget() { return budget; }

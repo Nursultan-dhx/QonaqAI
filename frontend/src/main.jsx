@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
+import EntryFlow from "./EntryFlow.jsx";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
   pin: "M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
@@ -22,6 +23,7 @@ const paths = {
   trash: "M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7",
   chevron: "m6 9 6 6 6-6",
   info: "M12 11v6m0-10v1M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z",
+  logout: "M10 17l5-5-5-5m5 5H3m12-8h5v16h-5",
 };
 function Icon({ name, size = 20 }) {
   return (
@@ -70,15 +72,23 @@ async function api(path, options = {}) {
     headers: { "Content-Type": "application/json", ...options.headers },
   });
   if (response.status === 204) return null;
-  const data = await response.json().catch(() => ({}));
+  const data = await response.json().catch(() => null);
   if (!response.ok) {
     const error = new Error(
-      data.message || "Не удалось выполнить запрос. Попробуйте ещё раз.",
+      data?.message || "Не удалось выполнить запрос. Попробуйте ещё раз.",
     );
-    error.fields = data.errors || {};
+    error.status = response.status;
+    error.fields = data?.errors || {};
     throw error;
   }
+  if (!data) throw new Error("Сервер вернул неожиданный ответ.");
   return data;
+}
+function authRequest(action, body = {}) {
+  return api(`/api/auth/${action}`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 function Photo({ src, alt, ...props }) {
   return (
@@ -159,16 +169,89 @@ function Modal({ title, onClose, children, wide = false }) {
   );
 }
 function App() {
-  const [data, setData] = useState(null),
-    [loadError, setLoadError] = useState(""),
-    [loading, setLoading] = useState(true),
+  const [view, setView] = useState({ page: "loading" });
+
+  function showEntry(screen = "auth") {
+    setView({ page: "entry", screen });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  async function bootstrap(screen = "demo") {
+    setView({ page: "loading" });
+    try {
+      const data = await api("/api/bootstrap");
+      setView({ page: "planner", data });
+    } catch (error) {
+      if (error.status === 401) showEntry(screen);
+      else setView({ page: "error", message: error.message, screen });
+    }
+  }
+
+  useEffect(() => {
+    bootstrap();
+  }, []);
+
+  async function enter(action, values) {
+    await authRequest(action, values);
+    await bootstrap("auth");
+  }
+
+  if (view.page === "entry") {
+    return (
+      <EntryFlow
+        initialScreen={view.screen}
+        onRegister={(values) => enter("register", values)}
+        onLogin={(values) => enter("login", values)}
+        onDemo={() => enter("demo")}
+      />
+    );
+  }
+  if (view.page === "error") {
+    return (
+      <div className="page-loading" role="alert">
+        <h1>Не удалось загрузить QonaqAI</h1>
+        <p>{view.message}</p>
+        <button
+          className="button primary"
+          onClick={() => bootstrap(view.screen)}
+        >
+          Попробовать снова
+        </button>
+      </div>
+    );
+  }
+  if (view.page === "loading") {
+    return (
+      <div className="page-loading" role="status">
+        <div className="brand">
+          Qonaq<span>AI</span>
+        </div>
+        <div className="spinner" />
+        <p>Загрузка…</p>
+      </div>
+    );
+  }
+  return (
+    <Planner
+      initialData={view.data}
+      onSessionExpired={() => showEntry()}
+      onLogout={async () => {
+        await authRequest("logout");
+        showEntry();
+      }}
+    />
+  );
+}
+
+function Planner({ initialData, onSessionExpired, onLogout }) {
+  const [data, setData] = useState(initialData),
     [tab, setTab] = useState("catalog"),
     [form, setForm] = useState(emptyForm),
     [editingId, setEditingId] = useState(null),
     [fieldErrors, setFieldErrors] = useState({}),
     [saving, setSaving] = useState(false),
     [query, setQuery] = useState(""),
-    [venues, setVenues] = useState([]),
+    [venues, setVenues] = useState(initialData.venues),
     [catalogLoading, setCatalogLoading] = useState(false),
     [catalogError, setCatalogError] = useState(""),
     [compare, setCompare] = useState([]),
@@ -176,7 +259,8 @@ function App() {
     [detail, setDetail] = useState(null),
     [showNotifications, setShowNotifications] = useState(false),
     [toast, setToast] = useState(null),
-    [deleteId, setDeleteId] = useState(null);
+    [deleteId, setDeleteId] = useState(null),
+    [signingOut, setSigningOut] = useState(false);
   const toastTimer = useRef(null),
     formRef = useRef(null);
   function notify(message, error = false) {
@@ -184,25 +268,8 @@ function App() {
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 6000);
   }
-  async function bootstrap() {
-    setLoading(true);
-    setLoadError("");
-    try {
-      const result = await api("/api/bootstrap");
-      setData(result);
-      setVenues(result.venues);
-    } catch (e) {
-      setLoadError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
   useEffect(() => {
-    bootstrap();
-    return () => clearTimeout(toastTimer.current);
-  }, []);
-  useEffect(() => {
-    if (!data) return;
     if (
       !Number.isInteger(Number(form.guests)) ||
       Number(form.guests) < 1 ||
@@ -237,7 +304,7 @@ function App() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, form.guests, form.strategy, !!data]);
+  }, [query, form.guests, form.strategy]);
   function field(key, value) {
     setForm((prev) => ({
       ...prev,
@@ -293,6 +360,10 @@ function App() {
       );
       return true;
     } catch (e) {
+      if (e.status === 401) {
+        onSessionExpired();
+        return false;
+      }
       setFieldErrors(e.fields);
       notify(e.message, true);
       return false;
@@ -351,30 +422,21 @@ function App() {
       setData((prev) => ({ ...prev, notifications }));
       notify("Мероприятие удалено");
     } catch (e) {
-      notify(e.message, true);
+      if (e.status === 401) onSessionExpired();
+      else notify(e.message, true);
     }
   }
-  if (loading)
-    return (
-      <div className="page-loading">
-        <div className="brand">
-          <span className="brand-mark">q</span>Qonaq<span>AI</span>
-        </div>
-        <div className="spinner" />
-        <p>Готовим ваше пространство для событий…</p>
-      </div>
-    );
-  if (loadError)
-    return (
-      <div className="page-loading">
-        <h1>Не удалось загрузить QonaqAI</h1>
-        <p>{loadError}</p>
-        <p>Проверьте, что Java-приложение запущено.</p>
-        <button className="button primary" onClick={bootstrap}>
-          Попробовать снова
-        </button>
-      </div>
-    );
+  async function signOut() {
+    setSigningOut(true);
+    try {
+      await onLogout();
+    } catch (error) {
+      if (error.status === 401) onSessionExpired();
+      else notify(error.message, true);
+    } finally {
+      setSigningOut(false);
+    }
+  }
   const allVenues = data.venues || [],
     selectedVenue = allVenues.find((v) => v.id === form.venueId),
     comparison = allVenues.filter((v) => compare.includes(v.id)),
@@ -470,12 +532,23 @@ function App() {
               )}
             </div>
             <div className="profile">
-              <span className="avatar">Н</span>
+              <span className="avatar" aria-hidden="true">
+                {Array.from(data.profile.name)[0]?.toLocaleUpperCase("ru")}
+              </span>
               <div>
-                <strong>{data.profile?.name || "Нурсултан"}</strong>
-                <small>Демо-профиль</small>
+                <strong title={data.profile.name}>{data.profile.name}</strong>
+                {data.profile.mode === "DEMO" && <small>Демо-профиль</small>}
               </div>
             </div>
+            <button
+              className="icon-button sign-out"
+              aria-label="Выйти"
+              title="Выйти"
+              onClick={signOut}
+              disabled={signingOut || saving}
+            >
+              <Icon name="logout" size={18} />
+            </button>
           </div>
         </div>
       </header>
@@ -484,32 +557,12 @@ function App() {
           <>
             <section className="hero">
               <div className="hero-copy">
-                <span className="eyebrow">
-                  <span className="live-dot" />
-                  ВАШЕ СОБЫТИЕ. ВАШЕ МЕСТО.
-                </span>
-                <h1>
-                  Большие моменты
-                  <br />
-                  начинаются <em>здесь.</em>
-                </h1>
-                <p>
-                  От уютного вечера до большого торжества.
-                  <br className="desktop-break" /> Найдите площадку в Астане,
-                  которая подходит вам.
-                </p>
+                <h1>Площадки Астаны</h1>
+                <p>Сравните залы и выберите место для своего мероприятия.</p>
                 <a href="#catalog" className="hero-link">
-                  Выбрать место для события
+                  Перейти к подбору
                   <Icon name="arrow" size={18} />
                 </a>
-                <div className="hero-meta">
-                  <span>
-                    <Icon name="pin" size={15} />
-                    Астана, Казахстан
-                  </span>
-                  <i />
-                  <span>{allVenues.length} официальных источников</span>
-                </div>
               </div>
               <div className="hero-visual">
                 <Photo
@@ -520,18 +573,9 @@ function App() {
                 />
                 <div className="hero-image-shade" />
                 <div className="hero-photo-label">
-                  <span className="photo-overline">
-                    ПРОСТРАНСТВА ДЛЯ ОСОБЕННОГО
-                  </span>
                   <strong>{heroVenue?.name}</strong>
-                  <span>
-                    {heroVenue?.hall}
-                    <Icon name="arrow" size={16} />
-                  </span>
+                  <span>{heroVenue?.hall}</span>
                 </div>
-                <span className="image-corner-note">
-                  Реальные площадки Астаны
-                </span>
               </div>
             </section>
             <section className="workspace" id="catalog">
@@ -541,13 +585,9 @@ function App() {
                     <Icon name="calendar" />
                   </span>
                   <div>
-                    <span className="eyebrow small">ШАГ 01</span>
                     <h2>Ваше мероприятие</h2>
                   </div>
                 </div>
-                <p className="planner-intro">
-                  Несколько деталей — и мы подберём подходящие пространства.
-                </p>
                 <form onSubmit={saveEvent} noValidate>
                   <label>
                     Название
@@ -622,7 +662,7 @@ function App() {
                         name="budget"
                         type="number"
                         min="1"
-                      step="0.01"
+                        step="0.01"
                         value={form.budget}
                         onChange={(e) => field("budget", e.target.value)}
                         aria-invalid={!!fieldErrors.budget}
@@ -695,10 +735,7 @@ function App() {
               <div className="catalog">
                 <div className="catalog-title">
                   <div>
-                    <span className="eyebrow small">ПОДОБРАНО ДЛЯ ВАС</span>
-                    <h2>
-                      Место имеет значение<span>.</span>
-                    </h2>
+                    <h2>Подходящие площадки</h2>
                   </div>
                   <span className="result-count">
                     {venues.length}{" "}
@@ -866,7 +903,7 @@ function App() {
                         <h3>Подходящих площадок пока нет</h3>
                         <p>
                           Попробуйте другое название или уменьшите количество
-                          гостей. Сейчас в каталоге пять площадок Астаны.
+                          гостей.
                         </p>
                         <button
                           className="button secondary"
@@ -881,12 +918,11 @@ function App() {
                     )}
                   </div>
                 )}
-                <div className="catalog-footer">
+                <div className="catalog-note">
                   <Icon name="info" size={15} />
                   <p>
-                    Вместимость указана для банкета. Доступность на дату и
-                    окончательную стоимость подтверждает площадка. Данные и
-                    фотографии — из официальных источников.
+                    Вместимость указана для банкета. Свободные даты и стоимость
+                    уточняйте у площадки.
                   </p>
                 </div>
               </div>
@@ -896,11 +932,7 @@ function App() {
           <section className="events-page">
             <div className="events-heading">
               <div>
-                <span className="eyebrow">ВАШЕ ПРОСТРАНСТВО</span>
-                <h1>
-                  Мои мероприятия<span>.</span>
-                </h1>
-                <p>Все идеи и выбранные площадки — в одном месте.</p>
+                <h1>Мои мероприятия</h1>
               </div>
               <button className="button primary" onClick={newEvent}>
                 <Icon name="plus" size={18} />
@@ -971,8 +1003,7 @@ function App() {
                 <span className="empty-illustration">
                   <Icon name="calendar" size={42} />
                 </span>
-                <h2>Каждое событие начинается с идеи</h2>
-                <p>Создайте первое мероприятие — мы поможем подобрать место.</p>
+                <h2>Пока нет мероприятий</h2>
                 <button className="button primary" onClick={newEvent}>
                   Создать мероприятие
                   <Icon name="arrow" size={18} />
@@ -981,13 +1012,6 @@ function App() {
             )}
           </section>
         )}
-        <footer className="site-footer">
-          <div className="brand footer-brand">
-            Qonaq<span>AI</span>
-          </div>
-          <p>Больше времени на важные моменты.</p>
-          <span>Сделано для событий в Казахстане · Демо-версия</span>
-        </footer>
       </main>
       {compare.length > 0 && (
         <div className="compare-bar">
