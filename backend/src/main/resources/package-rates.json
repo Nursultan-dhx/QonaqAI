@@ -1,0 +1,37 @@
+{
+  "catalogVersion": "demo-packages-v1",
+  "packages": [
+    {
+      "packageCode": "BASIC",
+      "displayName": "Базовый",
+      "description": "Основа мероприятия без включённых дополнительных услуг.",
+      "basePrice": 30000,
+      "includedServiceTypes": [],
+      "currency": "KZT",
+      "demoPrice": true
+    },
+    {
+      "packageCode": "STANDARD",
+      "displayName": "Стандарт",
+      "description": "Основа мероприятия со стандартным декором.",
+      "basePrice": 95000,
+      "includedServiceTypes": [
+        "DECOR"
+      ],
+      "currency": "KZT",
+      "demoPrice": true
+    },
+    {
+      "packageCode": "PREMIUM",
+      "displayName": "Премиум",
+      "description": "Основа мероприятия с декором и ведущим.",
+      "basePrice": 185000,
+      "includedServiceTypes": [
+        "DECOR",
+        "HOST"
+      ],
+      "currency": "KZT",
+      "demoPrice": true
+    }
+  ]
+}
