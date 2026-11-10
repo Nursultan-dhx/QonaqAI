@@ -1,0 +1,11 @@
+.tools/
+backend/target/
+backend/data/
+frontend/node_modules/
+frontend/dist/
+backend/src/main/resources/static/assets/
+backend/src/main/resources/static/index.html
+*.log
+.idea/
+.vscode/
+.DS_Store
