@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
 import EntryFlow from "./EntryFlow.jsx";
+import ServicePreviewPanel from "./components/ServicePreviewPanel.jsx";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
   pin: "M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
@@ -257,6 +258,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     [compare, setCompare] = useState([]),
     [showCompare, setShowCompare] = useState(false),
     [detail, setDetail] = useState(null),
+    [serviceEvent, setServiceEvent] = useState(null),
     [showNotifications, setShowNotifications] = useState(false),
     [toast, setToast] = useState(null),
     [deleteId, setDeleteId] = useState(null),
@@ -994,6 +996,12 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                         <Icon name="edit" size={16} />
                         Продолжить планирование
                       </button>
+                      <button
+                        className="button secondary full service-open"
+                        onClick={() => setServiceEvent(event)}
+                      >
+                        Рассчитать услуги
+                      </button>
                     </article>
                   );
                 })}
@@ -1165,6 +1173,16 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
             Вместимость зависит от рассадки. Доступность и окончательная цена
             требуют подтверждения площадкой.
           </p>
+        </Modal>
+      )}
+      {serviceEvent && (
+        <Modal title="Дополнительные услуги" onClose={() => setServiceEvent(null)} wide>
+          <ServicePreviewPanel
+            key={serviceEvent.id}
+            event={serviceEvent}
+            request={api}
+            onSessionExpired={onSessionExpired}
+          />
         </Modal>
       )}
       {deleteId && (

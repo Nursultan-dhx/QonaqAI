@@ -1,0 +1,50 @@
+{
+  "catalogVersion": "demo-v1",
+  "services": [
+    {
+      "serviceType": "HOST",
+      "displayName": "Ведущий",
+      "description": "Ведущий мероприятия: фиксированная демонстрационная стоимость.",
+      "pricingUnit": "FIXED",
+      "unitPrice": 70000,
+      "currency": "KZT",
+      "demoPrice": true
+    },
+    {
+      "serviceType": "PHOTOGRAPHY",
+      "displayName": "Фотограф",
+      "description": "Фотосъёмка: от 1 до 12 целых оплачиваемых часов.",
+      "pricingUnit": "PER_HOUR",
+      "unitPrice": 25000,
+      "currency": "KZT",
+      "demoPrice": true
+    },
+    {
+      "serviceType": "DECOR",
+      "displayName": "Декор",
+      "description": "Оформление мероприятия: фиксированная демонстрационная стоимость.",
+      "pricingUnit": "FIXED",
+      "unitPrice": 45000,
+      "currency": "KZT",
+      "demoPrice": true
+    },
+    {
+      "serviceType": "MUSIC",
+      "displayName": "Музыка",
+      "description": "Музыкальное сопровождение: от 1 до 12 целых оплачиваемых часов.",
+      "pricingUnit": "PER_HOUR",
+      "unitPrice": 20000,
+      "currency": "KZT",
+      "demoPrice": true
+    },
+    {
+      "serviceType": "CATERING",
+      "displayName": "Питание",
+      "description": "Питание на каждого гостя сохранённого мероприятия.",
+      "pricingUnit": "PER_GUEST",
+      "unitPrice": 8000,
+      "currency": "KZT",
+      "demoPrice": true
+    }
+  ]
+}

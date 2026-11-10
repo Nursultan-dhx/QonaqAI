@@ -1,0 +1,111 @@
+.service-preview {
+  padding: 0 24px 24px;
+  color: var(--ink);
+}
+.service-preview p {
+  line-height: 1.5;
+}
+.service-preview-notice {
+  padding: 14px;
+  background: var(--pale);
+  border-radius: 8px;
+}
+.service-options {
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+}
+.service-options legend {
+  padding: 0 6px;
+  font-weight: bold;
+}
+.service-option + .service-option {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.service-choice {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.service-choice input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  flex: 0 0 18px;
+  accent-color: var(--accent);
+}
+.service-choice span,
+.service-choice small {
+  display: block;
+}
+.service-choice small {
+  color: var(--muted);
+  margin-top: 3px;
+}
+.service-hours {
+  display: block;
+  margin: 10px 0 0 30px;
+}
+.service-hours input {
+  display: block;
+  width: 100px;
+  margin-top: 5px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: white;
+  color: inherit;
+}
+.service-catalog-version {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+}
+.service-result {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.service-table-scroll {
+  overflow-x: auto;
+}
+.service-result table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.service-result caption {
+  text-align: left;
+  padding-bottom: 10px;
+}
+.service-result th,
+.service-result td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.service-subtotal {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+}
+.service-open {
+  margin-top: 10px;
+}
+@media (max-width: 600px) {
+  .service-preview {
+    padding: 0 16px 16px;
+  }
+  .service-result th,
+  .service-result td {
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+  .service-subtotal {
+    flex-wrap: wrap;
+  }
+}

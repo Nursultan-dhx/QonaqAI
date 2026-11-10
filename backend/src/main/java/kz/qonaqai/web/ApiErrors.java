@@ -11,6 +11,11 @@ import java.util.*;
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(kz.qonaqai.domain.pricing.ServiceValidationException.class)
+    public ResponseEntity<?> serviceValidation(kz.qonaqai.domain.pricing.ServiceValidationException ex) {
+        return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage(), "errors", Map.of()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> validation(MethodArgumentNotValidException ex) {
         Map<String,String> errors=new LinkedHashMap<>();
