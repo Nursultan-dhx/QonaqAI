@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "slug": "ritz-carlton-astana",
+    "name": "The Ritz-Carlton, Astana",
+    "hall": "Grand Ballroom",
+    "address": "Астана, ул. Достык, 16",
+    "description": "Банкетный зал с возможностью разделения на четыре секции. Подходит для торжеств и деловых мероприятий. Вместимость зависит от выбранной рассадки.",
+    "imageUrl": "/images/ritz-carlton-astana.jpg",
+    "galleryUrls": [],
+    "sourceUrl": "https://www.ritzcarlton.com/en/hotels/tserz-the-ritz-carlton-astana/events/",
+    "imageSourceUrl": "https://cache.marriott.com/content/dam/marriott-renditions/TSERZ/tserz-ballroom-0033-hor-wide.jpg?output-quality=85&downsize=1600px:*",
+    "verifiedAt": "2026-11-11",
+    "capacity": 500,
+    "theaterCapacity": 800,
+    "area": 982,
+    "price": null,
+    "features": [
+      "Деление на секции",
+      "Фойе",
+      "Банкет и конференция"
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "st-regis-astana",
+    "name": "The St. Regis Astana",
+    "hall": "Astor Ballroom",
+    "address": "Астана, пр. Кабанбай батыра, 1",
+    "description": "Зал Astor Ballroom в отеле у реки Есиль. Пространство можно разделить на три части; доступны банкетная и театральная рассадки.",
+    "imageUrl": "/images/st-regis-astana.jpg",
+    "galleryUrls": [],
+    "sourceUrl": "https://www.marriott.com/en-us/hotels/tsexr-the-st-regis-astana/events/",
+    "imageSourceUrl": "https://cache.marriott.com/content/dam/marriott-renditions/TSEXR/tsexr-astor-ballroom-7980-hor-wide.jpg?output-quality=85&downsize=1600px:*",
+    "verifiedAt": "2026-11-11",
+    "capacity": 240,
+    "theaterCapacity": 400,
+    "area": 518.94,
+    "price": null,
+    "features": [
+      "Деление на три секции",
+      "Высота 6,4 м",
+      "Банкет и конференция"
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "hilton-astana",
+    "name": "Hilton Astana",
+    "hall": "Grand Ballroom",
+    "address": "Астана, ул. Гейдара Алиева, 14",
+    "description": "Большой зал в районе EXPO с высокими потолками и отдельным фойе. Подходит для банкетов и крупных деловых встреч.",
+    "imageUrl": "/images/hilton-astana.jpg",
+    "galleryUrls": [],
+    "sourceUrl": "https://www.hilton.com/en/hotels/tsekahi-hilton-astana/events/",
+    "imageSourceUrl": "https://www.hilton.com/im/en/TSEKAHI/1172513/grand-ballroom.jpg?ch=2358&cw=5619&gravity=NorthWest&impolicy=crop&rh=806&rw=1920&xposition=0&yposition=576",
+    "verifiedAt": "2026-11-11",
+    "capacity": 350,
+    "theaterCapacity": 700,
+    "area": 780,
+    "price": null,
+    "features": [
+      "Район EXPO",
+      "Высота 6,4 м",
+      "Фойе"
+    ]
+  },
+  {
+    "id": 4,
+    "slug": "rixos-president-astana",
+    "name": "Rixos President Astana",
+    "hall": "Зал мероприятий",
+    "address": "Астана, ул. Динмухамеда Кунаева, 7",
+    "description": "Площадка в административном центре Астаны. Официальный сайт указывает банкетную вместимость до 300 гостей и площадь крупнейшего зала 492 м².",
+    "imageUrl": "/images/rixos-president-astana.jpg",
+    "galleryUrls": [],
+    "sourceUrl": "https://all.accor.com/hotel/B1Q3/index.en.shtml",
+    "imageSourceUrl": "https://www.ahstatic.com/photos/b1q3_sm_00_p_2048x1536.jpg",
+    "verifiedAt": "2026-11-11",
+    "capacity": 300,
+    "theaterCapacity": null,
+    "area": 492,
+    "price": null,
+    "features": [
+      "Центр города",
+      "Шесть залов в отеле",
+      "Банкет до 300 гостей"
+    ]
+  },
+  {
+    "id": 5,
+    "slug": "sheraton-astana",
+    "name": "Sheraton Astana Hotel",
+    "hall": "Ballroom",
+    "address": "Астана, ул. Сыганак, 60/1",
+    "description": "Банкетный зал с возможностью деления на секции. Для свадеб и других мероприятий отель предлагает разные варианты рассадки.",
+    "imageUrl": "/images/sheraton-astana.jpg",
+    "galleryUrls": [],
+    "sourceUrl": "https://www.marriott.com/en-us/hotels/tsesi-sheraton-astana-hotel/events/",
+    "imageSourceUrl": "https://cache.marriott.com/is/image/marriotts7prod/si-tsesi-weddings-and-occ-18593-00342:Classic-Hor?fit=constrain&wid=1600",
+    "verifiedAt": "2026-11-11",
+    "capacity": 180,
+    "theaterCapacity": 450,
+    "area": 445,
+    "price": null,
+    "features": [
+      "Деление на секции",
+      "Сцена",
+      "Банкет до 180 гостей"
+    ]
+  }
+]
