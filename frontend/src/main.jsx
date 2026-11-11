@@ -6,6 +6,7 @@ import { BookingHistory } from "./components/BookingPanel.jsx";
 import PackageConfigurator from "./components/PackageConfigurator.jsx";
 import AssistantIntro from "./components/AssistantIntro.jsx";
 import ProposalEditor from "./components/ProposalEditor.jsx";
+import AccountArea from "./components/AccountArea.jsx";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
   pin: "M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
@@ -295,6 +296,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     [detail, setDetail] = useState(null),
     [serviceEvent, setServiceEvent] = useState(null),
     [proposalTarget, setProposalTarget] = useState(null),
+    [accountRevision, setAccountRevision] = useState(0),
     [assistantStage, setAssistantStage] = useState("brief"),
     [assistantBrief, setAssistantBrief] = useState(""),
     [assistantPending, setAssistantPending] = useState(false),
@@ -565,6 +567,18 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
               {data.events.length > 0 && (
                 <span className="nav-count">{data.events.length}</span>
               )}
+            </button>
+            <button
+              className={tab === "account" ? "nav-link active" : "nav-link"}
+              onClick={() => setTab("account")}
+            >
+              Личный кабинет
+            </button>
+            <button
+              className={tab === "plans" ? "nav-link active" : "nav-link"}
+              onClick={() => setTab("plans")}
+            >
+              Тарифы
             </button>
           </nav>
           <div className="header-actions">
@@ -1083,6 +1097,24 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
               </section>
             )}
           </>
+        ) : tab === "account" || tab === "plans" ? (
+          <AccountArea
+            page={tab}
+            request={api}
+            revision={accountRevision}
+            onSessionExpired={onSessionExpired}
+            onLoaded={(dashboard) =>
+              setData((prev) => ({
+                ...prev,
+                events: dashboard.events.map((item) => item.event),
+                notifications: dashboard.notifications,
+              }))
+            }
+            onEditEvent={editEvent}
+            onConfigure={setServiceEvent}
+            onProposal={setProposalTarget}
+            onNewEvent={newEvent}
+          />
         ) : (
           <section className="events-page">
             <div className="events-heading">
@@ -1344,6 +1376,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
           subtitle={`Этап 4 из 4 · Гостей: ${serviceEvent.guests} · Демонстрационные цены`}
           onClose={() => {
             setServiceEvent(null);
+            setAccountRevision((value) => value + 1);
             setAssistantStage("venues");
           }}
           bottomSheet
@@ -1371,6 +1404,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
             request={api}
             onSessionExpired={onSessionExpired}
             onSaved={async () => {
+              setAccountRevision((value) => value + 1);
               try {
                 const notifications = await api("/api/notifications");
                 setData((prev) => ({ ...prev, notifications }));

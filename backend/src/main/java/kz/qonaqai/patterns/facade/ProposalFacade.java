@@ -9,6 +9,7 @@ import kz.qonaqai.domain.estimate.*;
 import kz.qonaqai.patterns.builder.ProposalBuilder;
 import kz.qonaqai.persistence.*;
 import kz.qonaqai.service.PackageConfigurationService;
+import kz.qonaqai.service.PlanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,11 @@ public class ProposalFacade {
     private final ProposalRepository proposals;
     private final NotificationRepository notifications;
     private final PackageConfigurationService packages;
+    private final PlanService plans;
     public ProposalFacade(EventRepository events,VenueRepository venues,ProposalRepository proposals,
-            NotificationRepository notifications,PackageConfigurationService packages) {
+            NotificationRepository notifications,PackageConfigurationService packages,PlanService plans) {
         this.events=events; this.venues=venues; this.proposals=proposals; this.notifications=notifications; this.packages=packages;
+        this.plans=plans;
     }
     public Draft draft(SessionIdentity identity,Long eventId) {
         var source=source(identity,eventId);
@@ -36,6 +39,7 @@ public class ProposalFacade {
             new ProposalBuilder().event(source.event()).venue(source.venue()).estimate(source.quote()).demoTerms().build());
     }
     public View create(SessionIdentity identity,Long eventId,String title,String body,String expectedSourceToken) {
+        plans.requireProposalCapacity(identity);
         var source=source(identity,eventId);
         if (!source.token().equals(expectedSourceToken))
             throw conflict("PROPOSAL_SOURCE_CHANGED","Мероприятие или смета изменились. Создайте новый черновик предложения.");
@@ -58,6 +62,11 @@ public class ProposalFacade {
         return proposals.findAllByOwnerIdOrderByUpdatedAtDescIdDesc(identity.accountId()).stream().map(p->view(identity,p)).toList();
     }
     public View get(SessionIdentity identity,Long id) { return view(identity,owned(identity,id)); }
+    public String export(SessionIdentity identity,Long id) {
+        var proposal=owned(identity,id);
+        plans.requireTextExport(identity);
+        return proposal.title()+"\n\n"+proposal.body()+"\n\nСостояние исходных данных: "+view(identity,proposal).freshness()+"\nQonaqAI · DEMO\n";
+    }
     private Proposal owned(SessionIdentity identity,Long id) {
         return proposals.findByIdAndOwnerId(id,identity.accountId()).orElseThrow(()->missing("Предложение не найдено"));
     }

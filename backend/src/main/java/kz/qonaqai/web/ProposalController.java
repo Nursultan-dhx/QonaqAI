@@ -7,6 +7,7 @@ import java.util.List;
 import kz.qonaqai.auth.AuthSessions;
 import kz.qonaqai.patterns.facade.ProposalFacade;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +29,11 @@ public class ProposalController {
     public List<ProposalFacade.View> all(HttpServletRequest request) { return proposals.all(sessions.require(request)); }
     @GetMapping("/api/proposals/{id}")
     public ProposalFacade.View get(@PathVariable Long id,HttpServletRequest request) { return proposals.get(sessions.require(request),id); }
+    @GetMapping(value="/api/proposals/{id}/export",produces="text/plain;charset=UTF-8")
+    public ResponseEntity<String> export(@PathVariable Long id,HttpServletRequest request) {
+        return ResponseEntity.ok().header("Content-Disposition","attachment; filename=proposal-"+id+".txt")
+            .body(proposals.export(sessions.require(request),id));
+    }
     @PutMapping("/api/proposals/{id}")
     public ProposalFacade.View edit(@PathVariable Long id,@Valid @RequestBody Edit body,HttpServletRequest request) {
         return proposals.edit(sessions.require(request),id,body.title(),body.body(),body.expectedVersion());

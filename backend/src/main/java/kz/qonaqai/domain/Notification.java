@@ -14,6 +14,9 @@ public class Notification {
     @Column(length=1000) private String message;
     private Instant createdAt;
     protected Notification() {}
+    public Notification(Long ownerId, String message) {
+        this.ownerId=ownerId; this.message=message; this.createdAt=Instant.now();
+    }
     public Notification(EventPlan event, String message) {
         this.eventId = event.id();
         this.ownerId = event.ownerId();

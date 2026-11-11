@@ -25,9 +25,11 @@ public class BookingService {
     private final BookingRepository bookings;
     private final PackageConfigurationService packages;
     private final EventEstimateRepository estimates;
+    private final NotificationRepository notifications;
     public BookingService(EventRepository events, VenueRepository venues, BookingRepository bookings,
-            PackageConfigurationService packages, EventEstimateRepository estimates) {
+            PackageConfigurationService packages, EventEstimateRepository estimates, NotificationRepository notifications) {
         this.events=events; this.venues=venues; this.bookings=bookings; this.packages=packages; this.estimates=estimates;
+        this.notifications=notifications;
     }
     @Transactional(readOnly=true)
     public Availability availability(Long venueId, OffsetDateTime start, OffsetDateTime end) {
@@ -58,7 +60,9 @@ public class BookingService {
         if(bookings.countConflicts(venue.id(),start,end)>0)
             throw conflict("VENUE_UNAVAILABLE","Площадка уже занята на выбранное время. Проверьте другой интервал.");
         var estimate=estimates.findById(quote.estimateId()).orElseThrow();
-        return view(bookings.saveAndFlush(new Booking(event,venue,estimate,start,end,ZONE.getId())));
+        var booking=bookings.saveAndFlush(new Booking(event,venue,estimate,start,end,ZONE.getId()));
+        notifications.save(new kz.qonaqai.domain.Notification(event,"DEMO-бронь площадки «"+venue.name()+"» подтверждена."));
+        return view(booking);
     }
     @Transactional(readOnly=true)
     public List<View> history(SessionIdentity identity) {
@@ -71,8 +75,10 @@ public class BookingService {
         if(event.isPresent()) venues.findForUpdate(route.getVenueId()).orElseThrow();
         var booking=bookings.findByIdAndOwnerId(id,identity.accountId()).orElseThrow(()->missing("Бронирование не найдено"));
         if(event.isEmpty() && booking.status()!=BookingStatus.CANCELLED) throw new IllegalStateException("Missing booked event");
+        boolean changed=booking.status()!=BookingStatus.CANCELLED;
         booking.cancel();
         bookings.flush();
+        if (changed) event.ifPresent(value->notifications.save(new kz.qonaqai.domain.Notification(value,"DEMO-бронь площадки «"+booking.venueName()+"» отменена.")));
         return view(booking);
     }
     private void validate(OffsetDateTime start, OffsetDateTime end) {
