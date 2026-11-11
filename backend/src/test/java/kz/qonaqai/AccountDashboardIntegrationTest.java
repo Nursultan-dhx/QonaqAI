@@ -60,6 +60,14 @@ class AccountDashboardIntegrationTest extends PlanningIntegrationSupport {
         mvc.perform(get("/api/account/dashboard").session(other)).andExpect(jsonPath("$.events.length()").value(0))
             .andExpect(jsonPath("$.proposals.length()").value(0)).andExpect(jsonPath("$.notifications.length()").value(0));
     }
+    @Test void dashboardSerializesEventValuesWhenJpaAlreadyHoldsAProxy() throws Exception {
+        var session=account(); long id=event(session); saveQuote(session,id); proposal(session,id);
+        em.flush(); em.clear();
+        em.getReference(kz.qonaqai.domain.EventPlan.class,id);
+        var response=mvc.perform(get("/api/account/dashboard").session(session)).andExpect(status().isOk())
+            .andExpect(jsonPath("$.events[0].event.title").value("Корпоратив команды")).andReturn().getResponse();
+        assertThat(response.getContentAsString()).doesNotContain("hibernate_interceptor","hibernateLazyInitializer");
+    }
     @Test void bookingChangesAppearInDashboardAndNotifications() throws Exception {
         var session=account(); long id=event(session); saveQuote(session,id);
         var saved=json(mvc.perform(get("/api/events/"+id+"/package").session(session)));

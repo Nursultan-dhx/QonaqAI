@@ -43,4 +43,6 @@ public class EventPlan {
     public int guests() { return guests; }
     public BigDecimal budget() { return budget; }
     public StrategyId strategy() { return strategy; }
+    public String description() { return description; }
+    public Instant updatedAt() { return updatedAt; }
 }
