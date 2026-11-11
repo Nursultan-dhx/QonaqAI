@@ -2,7 +2,7 @@
 
 Перед проверкой запустите приложение по README. Дата мероприятия в примерах — текущая дата плюс 30 дней; бюджет — 2 000 000 ₸, количество гостей — 80. Уведомления и сохранённые мероприятия зависят от действий, выполненных ранее.
 
-Проверено 11 ноября 2026 года: сборка завершилась, все 12 автотестов прошли. Ниже отдельно указаны результаты ручных проверок. Команда проверки — `build.ps1`; отчёты JUnit создаются в `backend/target/surefire-reports`.
+Историческая проверка первых двух этапов, записанная до добавления аккаунтов: сборка завершилась, все 12 тогдашних автотестов прошли. Актуальные результаты последней фазы приведены в дополнениях ниже. Ниже отдельно указаны результаты ручных проверок. Команда проверки — `build.ps1`; отчёты JUnit создаются в `backend/target/surefire-reports`.
 
 | № | Сценарий и входные данные | Ожидаемый результат | Проверка | Фактический результат |
 |---|---|---|---|---|
@@ -26,3 +26,188 @@
 Дополнительно проверена запись после перезапуска в двух отдельных JVM: первая сохранила мероприятие с площадкой, вторая загрузила его, изменила название и сохранила новые уведомления. В изолированной среде Codex проверка доступа Java к файлу давала ложный ответ «только чтение», поэтому для этой проверки использовался временный адаптер на отдельной тестовой базе. Адаптер не входит в проект.
 
 Граничные случаи 9–14 дополняют успешный пользовательский путь. По мере добавления пакетов, бронирования и ИИ необходимо расширять этот список, сохраняя проверки предыдущих этапов.
+
+## Module 03 Phase 1 — Factory Method, 11 ноября 2026
+
+Финальная проверка: **89 тестов выполнено, 89 прошло, 0 failures, 0 errors,
+0 skipped**. Из них 45 изолированных unit-тестов, 30 новых MockMvc-проверок
+и все 14 существующих интеграционных тестов. Предыдущий блок — исторические
+ручные сценарии, а не заявление об их повторном выполнении в этой фазе.
+
+Команды:
+- В frontend: npm run build — PASS, Vite собрал 27 модулей.
+- В backend: mvn -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test-compile — PASS.
+- В backend: mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test — PASS, 88 тестов до последнего дополнительного unit-теста.
+- В backend: mvn -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 package — PASS, финальные 89 тестов и JAR с интерфейсом.
+
+Первый новый прогон имел одно падение нового теста: fixture сравнивала
+состояние до перечитывания H2 с состоянием после него. Исправлена подготовка:
+обе стороны сравнения берутся из сохранённого состояния. Старые тесты не
+изменялись. Ограничение аудита из-за отсутствующего Surefire устранено штатной
+загрузкой Maven artifacts, версия плагина не менялась.
+
+| Проверка | Результат |
+|---|---|
+| Пять ConcreteCreator через общий create(), точные суммы | PASS |
+| BigDecimal 0.10 × 3 = 0.30, границы часов, гости | PASS |
+| Каталог: пропуски, дубли, неправильные единицы/цены | PASS |
+| Фабричный метод реально вызывается бизнес-сервисом | PASS |
+| Публичные метаданные и DEMO-маркировка | PASS |
+| Фотограф 3 часа + питание 50 гостей = 475000 KZT | PASS |
+| Дубликаты/неподдерживаемый тип/лишние поля/подмена цены | PASS |
+| 401, чужой аккаунт, null-owner демосессии | PASS |
+| Preview не меняет события/уведомления/схему/цены площадок | PASS |
+| Headless Firefox: расчёт, один запрос при повторной отправке, устаревший ответ | PASS |
+| Headless Firefox: ширина панели 390 px, закрытие очищает выбор | PASS |
+
+JUnit-отчёты: backend/target/surefire-reports. Интеграционные БД — H2 в памяти.
+Браузер проверял временное приложение на порту 18083 с отдельной H2 в памяти;
+сервер/Firefox после проверки остановлены. Пользовательская backend/data не
+использовалась. Заблокированных обязательных проверок нет.
+
+Подробнее: [FACTORY_METHOD_IMPLEMENTATION.md](FACTORY_METHOD_IMPLEMENTATION.md).
+
+
+## Module 03 Phase 2 — Decorator и смета, 11 ноября 2026
+
+**172 теста выполнено, 172 прошло, 0 failures, 0 errors, 0 skipped**.
+Новые случаи: DecoratorTest 16, EstimateCatalogTest 11, EstimateServiceTest 13,
+EstimateIntegrationTest 43. Все прежние 89 тестов сохранены и прошли.
+
+Команды из backend:
+- mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test-compile — PASS, Java release 21.
+- mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test — PASS, 172/172.
+- mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 package — PASS, повторно 172/172, исполняемый JAR.
+Из frontend: npm run build — PASS, 29 модулей.
+
+Проверены все пакеты и декораторы, рекурсия cost()/lines(), неизменяемые
+результаты, отсутствие двойной доплаты включений, Factory Method в сборщике,
+точный пример 1350000/650000/67.50%, бюджеты, неизвестная аренда, переполнение,
+строгий JSON, аккаунты/демо и отсутствие изменения событий/уведомлений/схемы.
+Фактические цены площадок остались null. Новых зависимостей и таблиц нет.
+
+Браузерный скрипт scripts/check-estimate-ui.mjs проверил собранный JAR с
+отдельной H2 в памяти на 18084. Восемь групп PASS: desktop BASIC, STANDARD/
+PREMIUM и отсутствие двойного начисления, восстановление черновика, неверные
+часы/повторная отправка/задержанный ответ, ширина 390 px, превышение бюджета,
+закрытие/смена мероприятия, отсутствие площадки/истечение сессии. Скриншоты
+просмотрены. Временные сервер и Firefox остановлены. Пользовательская БД
+backend/data не использовалась. Заблокированных обязательных проверок нет.
+
+Повторение браузерной проверки, контракт API, все тарифы и ограничения:
+[DECORATOR_IMPLEMENTATION.md](DECORATOR_IMPLEMENTATION.md).
+
+## Module 03 Phase 3 — сохранение конфигураций и snapshots, 11 ноября 2026
+
+**207 тестов выполнено, 207 прошло, 0 failures, 0 errors, 0 skipped.**
+Прежние 172 теста не изменялись. Добавлены 35: SavedConfigurationTest 6,
+EstimateSnapshotTest 1, PackagePersistenceIntegrationTest 24,
+PackageConcurrencyIntegrationTest 4. Всего 92 unit и 115 integration.
+
+Из backend выполнены команды с существующим локальным cache:
+
+```sh
+mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test-compile
+mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test
+mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 package
+```
+
+Финальный package: BUILD SUCCESS, 207/207 и исполняемый JAR, Java release 21.
+Frontend: npm run build — PASS, Vite 29 modules. Тестовые БД отдельные;
+пользовательская backend/data не открывалась. Конфигурации, snapshot lines,
+история, ожидаемые версии/тарифы/контекст, demo/ownership и strict JSON покрыты.
+Настоящие отдельные транзакции проверили две concurrent initial/update saves;
+искусственный DB constraint failure подтвердил rollback до предыдущей сметы.
+
+Реальный restart и additive upgrade проверены скриптом:
+
+```sh
+python3 scripts/check-estimate-restart.py --baseline /tmp/qonaqai-phase2-baseline.jar
+```
+
+Пять групп PASS. Phase 2 создала account/event/venues/notifications в новой
+временной **файловой** H2. Phase 3 сохранила старые данные и STANDARD + photo3
+за 670000. После stop/start отдельной JVM весь saved JSON совпал. Изменённые
+только внутри test-owned JAR каталоги дали новый preview 735000, сохранив
+старый snapshot 670000 и revision 1; explicit save создал revision 2.
+Скрипт очищает только собственный TemporaryDirectory, рабочую БД не использует.
+
+Firefox BiDi, отдельная in-memory H2/сервер 18087:
+
+```sh
+QONAQ_UI_TEST_BASE_URL=http://127.0.0.1:18087 QONAQ_BIDI_URL=ws://127.0.0.1:19227/session node scripts/check-estimate-ui.mjs
+QONAQ_UI_TEST_BASE_URL=http://127.0.0.1:18087 QONAQ_BIDI_URL=ws://127.0.0.1:19227/session node scripts/check-saved-estimate-ui.mjs
+```
+
+Прежние 8 групп и новые 5 групп PASS: save/reopen/full reload,
+STANDARD/PREMIUM, две вкладки и 409, refresh с сохранением draft, duplicate save,
+изменение draft при задержанном PUT, validation error/retry, OUTDATED после
+изменения гостей, новый snapshot, over-budget save. Desktop 1280, tablet 768,
+mobile 390 проверены без overflow, мобильный screenshot просмотрен.
+Тестовый Java запущен из отдельной frozen-копии JAR, которую не перезаписывает
+Maven. Firefox/сервер после проверок остановлены.
+
+Новые тестовые ошибки при разработке исправлены: inverse JPA cascade collection,
+неверное expected 600000 вместо 590000 при смене photo rate, escaped JSON fixture.
+Прежние тесты не ослаблялись. Test-compile не выдаётся за успешный test run.
+Заблокированных обязательных проверок нет. Полная модель и точные примеры:
+[ESTIMATE_PERSISTENCE_IMPLEMENTATION.md](ESTIMATE_PERSISTENCE_IMPLEMENTATION.md).
+
+## Module 04 — Booking, 11 ноября 2026
+
+Полный Maven `package`: **243/243**, 0 failures, 0 errors, 0 skipped.
+207 прежних проверок сохранены, добавлено 36 исполнений BookingIntegrationTest.
+Java release 21, compilation и исполняемый JAR — PASS. React production build — PASS.
+
+```sh
+# Из корня репозитория; существующий локальный Maven cache
+npm --prefix frontend run build
+mvn -f backend/pom.xml -o -B -Dmaven.repo.local="$PWD/.tools/m2" package
+# Отдельный запуск обязательных concurrency-тестов, если нужен только этот набор
+mvn -f backend/pom.xml -o -B -Dmaven.repo.local="$PWD/.tools/m2" \
+  '-Dtest=BookingIntegrationTest#concurrent*' test
+python3 scripts/check-booking-restart.py
+# При наличии собранного JAR Module 03 проверяется также upgrade:
+python3 scripts/check-booking-restart.py --baseline .tools/module03-baseline.jar
+```
+
+Concurrency: разные мероприятия/одна площадка, три повторения в независимых
+REQUIRES_NEW transactions/connections: ровно один CONFIRMED, один
+VENUE_UNAVAILABLE; после завершения потоков проверена ровно одна запись БД.
+Один event: один CONFIRMED/один EVENT_ALREADY_BOOKED. Разные Venue: оба commit.
+Отдельный финальный запуск concurrency-набора: 5/5, 0 failures/errors/skipped.
+
+Реальный file-H2 upgrade/restart: три группы PASS. Старые события/сметы
+пережили добавление booking-таблицы. CONFIRMED и занятость пережили restart.
+CANCELLED, сумма/ревизия и история пережили удаление event и следующий restart;
+слот доступен и успешно бронируется другим event. Скрипт создаёт/удаляет только
+свою TemporaryDirectory внутри `.tools`, рабочую `backend/data` не использует.
+
+Для браузера нужен запущенный **собранный JAR с отдельной тестовой H2** и
+Firefox с отдельным профилем. Node 22+ даёт встроенный WebSocket:
+
+```sh
+cp backend/target/qonaqai-0.1.0.jar .tools/module04-ui.jar
+PORT=18090 QONAQ_DB_URL='jdbc:h2:mem:booking-ui;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000' \
+  java -jar .tools/module04-ui.jar
+# Дождаться сообщения Tomcat started; следующие команды в другом терминале
+mkdir -p .tools/booking-firefox-profile
+firefox --headless --no-remote --profile "$PWD/.tools/booking-firefox-profile" \
+  --remote-debugging-port 19226 about:blank
+QONAQ_UI_TEST_BASE_URL=http://127.0.0.1:18090 \
+  QONAQ_BIDI_URL=ws://127.0.0.1:19226/session node scripts/check-booking-ui.mjs
+```
+
+Firefox: пять групп PASS — saved event/package/estimate, network retry и
+повторное подтверждение, отмена/recheck, устаревшая доступность с 409,
+потерянный HTTP-ответ после commit с восстановлением из истории, 390 px и
+общая история аккаунта. Скриншот `.tools/booking-ui/mobile.png` просмотрен.
+Проверка всей страницы выявила тесную мобильную шапку; уменьшен промежуток
+между её элементами на ширине до 420 px. Браузерный script использует уникальный
+URL, чтобы кеш index.html прежней сборки не подменял проверяемую версию.
+JAR сервера копируется отдельно, чтобы повторная сборка его не заменяла.
+Старые API и паттерны сохранены.
+Дополнительно повторены пять групп Firefox-регрессии сохранённых смет
+Module 03: все PASS, включая две вкладки, 409, поздний PUT и OUTDATED.
+
+Подробности и ограничения: [BOOKING_IMPLEMENTATION.md](BOOKING_IMPLEMENTATION.md).

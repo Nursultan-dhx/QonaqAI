@@ -17,8 +17,10 @@ public class EventService {
     private final VenueRepository venues;
     private final NotificationRepository notifications;
     private final EventSubject subject;
-    public EventService(EventRepository events,VenueRepository venues,NotificationRepository notifications,EventSubject subject) {
-        this.events=events;this.venues=venues;this.notifications=notifications;this.subject=subject;
+    private final PackageConfigurationRepository packages;
+    private final BookingRepository bookings;
+    public EventService(EventRepository events,VenueRepository venues,NotificationRepository notifications,EventSubject subject,PackageConfigurationRepository packages,BookingRepository bookings) {
+        this.events=events;this.venues=venues;this.notifications=notifications;this.subject=subject;this.packages=packages;this.bookings=bookings;
     }
     @Transactional(readOnly = true)
     public List<EventPlan> all(SessionIdentity identity) {
@@ -32,6 +34,11 @@ public class EventService {
 
     public EventPlan save(SessionIdentity identity, Long id, EventDraft draft) {
         EventPlan event = id == null ? null : findOwnedEvent(identity, id);
+        if(event!=null && bookings.existsByEventIdAndStatus(id,kz.qonaqai.domain.booking.BookingStatus.CONFIRMED)
+                && (!java.util.Objects.equals(event.venueId(),draft.venueId()) || !event.date().equals(draft.date())
+                    || event.guests()!=draft.guests() || event.budget().compareTo(draft.budget())!=0 || event.type()!=draft.type()))
+            throw new kz.qonaqai.domain.booking.BookingConflictException("EVENT_BOOKED",
+                "Сначала отмените бронь, чтобы изменить дату, площадку, тип, гостей или бюджет");
         Venue venue=draft.venueId()==null?null:venues.findById(draft.venueId()).orElseThrow(()->bad("Площадка не найдена"));
         if(venue!=null && venue.capacity()<draft.guests()) throw bad("Площадка не вмещает указанное количество гостей. Выберите другую площадку.");
         if(venue!=null && venue.price()!=null && venue.price().compareTo(draft.budget())>0) throw bad("Цена площадки превышает бюджет мероприятия.");
@@ -43,12 +50,17 @@ public class EventService {
     }
     public void delete(SessionIdentity identity, Long id) {
         var event = findOwnedEvent(identity, id);
+        if(bookings.existsByEventIdAndStatus(id,kz.qonaqai.domain.booking.BookingStatus.CONFIRMED))
+            throw new kz.qonaqai.domain.booking.BookingConflictException("EVENT_BOOKED","Перед удалением мероприятия отмените бронь");
+        bookings.findAllByEventId(id).forEach(kz.qonaqai.domain.booking.Booking::detachDeletedEvent);
+        bookings.flush();
         notifications.deleteByEventIdAndOwnerId(id, identity.accountId());
+        packages.findByEvent_Id(id).ifPresent(packages::delete);
         events.delete(event);
     }
 
     private EventPlan findOwnedEvent(SessionIdentity identity, Long id) {
-        return events.findByIdAndOwnerId(id, identity.accountId())
+        return events.findOwnedForUpdate(id, identity.accountId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Мероприятие не найдено"));
     }
     private ResponseStatusException bad(String message) { return new ResponseStatusException(HttpStatus.BAD_REQUEST,message); }
