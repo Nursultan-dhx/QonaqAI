@@ -5,7 +5,6 @@ import EntryFlow from "./EntryFlow.jsx";
 import { BookingHistory } from "./components/BookingPanel.jsx";
 import PackageConfigurator from "./components/PackageConfigurator.jsx";
 import AssistantIntro from "./components/AssistantIntro.jsx";
-import { parseEventBrief } from "./components/parse-event-brief.js";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
   pin: "M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
@@ -296,6 +295,9 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     [serviceEvent, setServiceEvent] = useState(null),
     [assistantStage, setAssistantStage] = useState("brief"),
     [assistantBrief, setAssistantBrief] = useState(""),
+    [assistantPending, setAssistantPending] = useState(false),
+    [assistantError, setAssistantError] = useState(""),
+    [assistantNotes, setAssistantNotes] = useState(null),
     [showNotifications, setShowNotifications] = useState(false),
     [toast, setToast] = useState(null),
     [deleteId, setDeleteId] = useState(null),
@@ -437,6 +439,8 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
   function newEvent() {
     setForm(emptyForm());
     setAssistantBrief("");
+    setAssistantError("");
+    setAssistantNotes(null);
     setAssistantStage("brief");
     setEditingId(null);
     setFieldErrors({});
@@ -456,17 +460,24 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
       100,
     );
   }
-  function startAssistant() {
-    const extracted = parseEventBrief(assistantBrief);
-    setForm((current) => ({
-      ...current,
-      ...extracted,
-      description: assistantBrief.trim(),
-      venueId: null,
-    }));
-    setFieldErrors({});
-    setAssistantStage("parameters");
-    setTimeout(() => formRef.current?.querySelector("input")?.focus(), 260);
+  async function startAssistant() {
+    if (assistantPending) return;
+    setAssistantPending(true);
+    setAssistantError("");
+    try {
+      const result = await api("/api/assistant/suggest", {
+        method: "POST", body: JSON.stringify({ text: assistantBrief.trim() }),
+      });
+      setForm({ ...emptyForm(), title: "", date: "", guests: "", budget: "",
+        ...result.fields, description: assistantBrief.trim(), venueId: null });
+      setAssistantNotes(result);
+      setFieldErrors({});
+      setAssistantStage("parameters");
+      setTimeout(() => formRef.current?.querySelector("input")?.focus(), 260);
+    } catch (failure) {
+      if (failure.status === 401) onSessionExpired();
+      else setAssistantError(failure.message);
+    } finally { setAssistantPending(false); }
   }
   function startManualEntry() {
     setAssistantStage("parameters");
@@ -629,6 +640,8 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                 onBriefChange={setAssistantBrief}
                 onContinue={startAssistant}
                 onManual={startManualEntry}
+                pending={assistantPending}
+                error={assistantError}
               />
             ) : (
               <header className="assistant-flow-heading">
@@ -679,6 +692,13 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                       </div>
                     </div>
                     <form onSubmit={continueToVenues} noValidate>
+                      {assistantNotes && <div className="source-note" role="status">
+                        <div>
+                          <p>Демо-подсказки из вашего описания. Проверьте значения перед сохранением.</p>
+                          {assistantNotes.missing.length > 0 && <p>Уточните: {assistantNotes.missing.map(key => ({type:"тип мероприятия",date:"дату",guests:"гостей",budget:"бюджет"})[key]).join(", ")}.</p>}
+                          {assistantNotes.warnings.map(note => <p key={note}>{note}</p>)}
+                        </div>
+                      </div>}
                       <label>
                         Название
                         <input

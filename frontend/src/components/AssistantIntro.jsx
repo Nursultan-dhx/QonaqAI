@@ -6,6 +6,8 @@ export default function AssistantIntro({
   onBriefChange,
   onContinue,
   onManual,
+  pending,
+  error,
 }) {
   function submit(event) {
     event.preventDefault();
@@ -35,17 +37,20 @@ export default function AssistantIntro({
           <div className="assistant-intro-actions">
             <button
               className="assistant-intro-submit"
-              disabled={!brief.trim()}
+              disabled={!brief.trim() || pending}
               type="submit"
             >
-              Продолжить <span aria-hidden="true">→</span>
+              {pending ? "Разбираем описание…" : "Продолжить"} <span aria-hidden="true">→</span>
             </button>
           </div>
         </form>
+        <small>Демо-помощник распознаёт тип, дату, гостей и бюджет. Все подсказки можно исправить.</small>
+        {error && <p role="alert" className="field-error">{error}</p>}
         <button
           className="assistant-intro-manual"
           onClick={onManual}
           type="button"
+          disabled={pending}
         >
           Заполнить вручную
         </button>
