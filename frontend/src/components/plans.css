@@ -1,0 +1,347 @@
+.qplans {
+  max-width: 1030px;
+  margin: 0 auto;
+  color: #2c4134;
+}
+.qplans-intro {
+  text-align: center;
+  padding: 8px 0 40px;
+}
+.qplans-pill {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+  color: #798a6c;
+  background: #eaf0e3;
+  border: 1px solid #d9e3ce;
+  border-radius: 30px;
+  padding: 9px 15px;
+}
+.qplans-intro h1 {
+  font-size: clamp(44px, 5.6vw, 70px);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -2px;
+  margin: 22px 0 19px;
+}
+.qplans-intro h1 em {
+  font-weight: 400;
+  color: #849275;
+}
+.qplans-intro > p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #84907e;
+  margin-bottom: 0;
+}
+.qplans-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 10px;
+}
+.qplans-card {
+  border: 1px solid #dfe5d6;
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+.qplans-card.pro {
+  background: #284b3a;
+  color: #f3f5ea;
+  border-color: #284b3a;
+  padding-top: 57px;
+  box-shadow: 0 16px 40px #2b4a3214;
+}
+.qplans-ribbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: #dce7bc;
+  color: #4a623e;
+  text-align: center;
+  font-size: 8px;
+  letter-spacing: 1.8px;
+}
+.qplans-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 20px;
+}
+.qplans-icon {
+  font-size: 29px;
+  line-height: 1;
+  color: #7c9570;
+}
+.pro .qplans-icon {
+  color: #d6e4ac;
+}
+.qplans-current {
+  font-size: 8px;
+  letter-spacing: 1.3px;
+  color: #8b9980;
+}
+.pro .qplans-current {
+  color: #b5c6a5;
+}
+.qplans-card h2 {
+  font-size: 33px;
+  letter-spacing: -0.5px;
+  font-weight: 400;
+  margin-bottom: 9px;
+}
+.qplans-card h2 em {
+  color: #8b9b7a;
+  font-weight: 400;
+}
+.pro h2 em {
+  color: #d2dfb3;
+}
+.qplans-tagline {
+  font-size: 12px;
+  color: #86917c;
+  min-height: 18px;
+}
+.pro .qplans-tagline {
+  color: #bdcdb1;
+}
+.qplans-price {
+  font-size: 43px;
+  letter-spacing: -1.4px;
+  margin: 25px 0 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+.qplans-price span {
+  font-size: 10px;
+  letter-spacing: 0;
+  color: #8d9980;
+}
+.pro .qplans-price span {
+  color: #becdad;
+}
+.qplans-value {
+  font-size: 13px;
+  line-height: 1.65;
+  min-height: 65px;
+  color: #7b8971;
+  max-width: 320px;
+}
+.qplans-value b {
+  font-weight: 400;
+  display: block;
+  color: #e1eacc;
+}
+.pro .qplans-value {
+  color: #b9cbb0;
+}
+.qplans-cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 15px 19px;
+  border-radius: 10px;
+  background: #f0f4e9;
+  color: #44623d;
+  border: 1px solid #d7e2cb;
+  font-size: 13px;
+}
+.pro .qplans-cta {
+  color: #2e4c2f;
+  background: #dae9b9;
+  border-color: #dae9b9;
+}
+.qplans-cta:not(:disabled):hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+.qplans-cta:disabled {
+  opacity: 0.65;
+}
+.qplans-cta span {
+  font-size: 20px;
+}
+.qplans-cta-note {
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.5;
+  color: #96a189;
+  margin-top: 10px;
+  min-height: 15px;
+}
+.pro .qplans-cta-note {
+  color: #afc29f;
+}
+.qplans-feature-heading {
+  font-size: 8px;
+  letter-spacing: 1.3px;
+  color: #8c9b7e;
+  border-top: 1px solid #e6ebde;
+  padding-top: 24px;
+  margin-top: 26px;
+}
+.pro .qplans-feature-heading {
+  border-color: #4c6650;
+  color: #acc39c;
+}
+.qplans-card ul {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 17px;
+}
+.qplans-card li {
+  display: flex;
+  gap: 11px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6d7f62;
+}
+.qplans-card li > span {
+  flex-shrink: 0;
+  color: #879e6d;
+}
+.pro li {
+  color: #d8e3ca;
+}
+.pro li > span {
+  color: #c6dc9d;
+}
+.qplans-signin {
+  font-size: 11px;
+  color: #8a947f;
+  text-align: center;
+  line-height: 1.7;
+  margin: 20px 0 0;
+}
+.qplans-outcomes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  padding: 50px 0;
+  border-bottom: 1px solid #e1e7d7;
+  margin: 10px 0 40px;
+}
+.qplans-outcomes > div > span {
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  color: #91a07e;
+}
+.qplans-outcomes h3 {
+  font-weight: 400;
+  font-size: 23px;
+  margin: 15px 0 10px;
+  line-height: 1.2;
+}
+.qplans-outcomes p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #8b9681;
+  margin-bottom: 0;
+}
+.qplans-faq {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.qplans-faq h2 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 400;
+  margin-bottom: 25px;
+}
+.qplans-faq details {
+  border-bottom: 1px solid #e2e7da;
+  padding: 18px 0;
+}
+.qplans-faq summary {
+  cursor: pointer;
+  font-size: 15px;
+  color: #516b47;
+}
+.qplans-faq details p {
+  color: #89977d;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 16px 0 0;
+}
+.qplans-final-note {
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.8;
+  color: #9aa58d;
+  margin: 32px auto 0;
+  max-width: 600px;
+}
+.account-area:has(.qplans) {
+  padding-top: 34px;
+}
+.account-area:has(.qplans) > .account-plan-summary {
+  display: none;
+}
+@media (max-width: 700px) {
+  .qplans-intro {
+    padding-top: 0;
+    padding-bottom: 30px;
+  }
+  .qplans-intro h1 {
+    font-size: 46px;
+  }
+  .qplans-intro > p {
+    font-size: 13px;
+  }
+  .qplans-pill {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .qplans-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .qplans-card {
+    padding: 26px;
+  }
+  .qplans-card.pro {
+    padding-top: 52px;
+  }
+  .qplans-value {
+    min-height: 0;
+    margin-bottom: 22px;
+    max-width: none;
+  }
+  .qplans-outcomes {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    padding: 36px 0;
+    margin-bottom: 30px;
+  }
+  .qplans-outcomes > div {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .qplans-outcomes h3 {
+    font-size: 23px;
+    margin: 10px 0;
+  }
+  .qplans-faq h2 {
+    font-size: 28px;
+  }
+  .qplans-card.pro {
+    order: -1;
+  }
+  .qplans-price {
+    font-size: 43px;
+  }
+  .qplans-card ul {
+    gap: 14px;
+  }
+}

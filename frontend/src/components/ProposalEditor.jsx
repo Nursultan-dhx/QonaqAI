@@ -19,6 +19,7 @@ export default function ProposalEditor({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [reload, setReload] = useState(0);
   const active = useRef(null);
@@ -94,6 +95,30 @@ export default function ProposalEditor({
       if (!controller.signal.aborted) setSaving(false);
     }
   }
+  async function improveWithAi() {
+    if (aiBusy || !record) return;
+    const controller = new AbortController();
+    active.current = controller;
+    setAiBusy(true);
+    setError("");
+    try {
+      const draft = await request(
+        `/api/events/${record.eventId}/proposal-ai-draft`,
+        { method: "POST", signal: controller.signal },
+      );
+      if (controller.signal.aborted) return;
+      if (!record.id) setRecord(draft);
+      setBody(draft.body);
+      setSaved(false);
+    } catch (failure) {
+      if (!controller.signal.aborted) {
+        if (failure.status === 401) onSessionExpired();
+        else setError(failure.message);
+      }
+    } finally {
+      if (!controller.signal.aborted) setAiBusy(false);
+    }
+  }
 
   return (
     <div className="proposal-editor">
@@ -117,6 +142,23 @@ export default function ProposalEditor({
       )}
       {!loading && record && (
         <form onSubmit={save}>
+          <div className="proposal-ai-action">
+            <div>
+              <strong>Добавьте событию голос</strong>
+              <p>
+                Gemini подготовит вступление, а данные сметы останутся в
+                документе. Заменит текущий текст черновика. Доступно в Pro.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="button secondary"
+              disabled={saving || aiBusy}
+              onClick={improveWithAi}
+            >
+              {aiBusy ? "Пишем с Gemini…" : "✦ Подготовить текст с ИИ"}
+            </button>
+          </div>
           {record.freshness && (
             <p className={`proposal-status ${record.freshness.toLowerCase()}`}>
               {proposalStatus[record.freshness]}
@@ -129,7 +171,7 @@ export default function ProposalEditor({
               value={title}
               maxLength={120}
               required
-              disabled={saving}
+              disabled={saving || aiBusy}
               onChange={(event) => {
                 setTitle(event.target.value);
                 setSaved(false);
@@ -144,7 +186,7 @@ export default function ProposalEditor({
               value={body}
               maxLength={16000}
               required
-              disabled={saving}
+              disabled={saving || aiBusy}
               onChange={(event) => {
                 setBody(event.target.value);
                 setSaved(false);
@@ -157,7 +199,7 @@ export default function ProposalEditor({
           </p>
           <button
             className="button primary"
-            disabled={saving || !title.trim() || !body.trim()}
+            disabled={saving || aiBusy || !title.trim() || !body.trim()}
           >
             {saving ? "Сохраняем…" : "Сохранить предложение"}
           </button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PlansPresentation from "./PlansPresentation.jsx";
 import { proposalStatus } from "./ProposalEditor.jsx";
 import "./account.css";
 
@@ -109,26 +110,28 @@ export default function AccountArea({
         page === "plans" ? "Демонстрационные тарифы" : "Личный кабинет"
       }
     >
-      <div className="account-heading">
-        <div>
-          <p className="eyebrow small">ВАШ QONAQAI</p>
-          <h1>
-            {page === "plans" ? "Тарифы для ваших планов" : "Личный кабинет"}
-          </h1>
-          <p>
-            {page === "plans"
-              ? "Выберите возможности для работы с предложениями."
-              : "Мероприятия, предложения и бронирования в одном месте."}
-          </p>
+      {page !== "plans" && (
+        <div className="account-heading">
+          <div>
+            <p className="eyebrow small">ВАШ QONAQAI</p>
+            <h1>
+              {page === "plans" ? "Тарифы для ваших планов" : "Личный кабинет"}
+            </h1>
+            <p>
+              {page === "plans"
+                ? "Выберите возможности для работы с предложениями."
+                : "Мероприятия, предложения и бронирования в одном месте."}
+            </p>
+          </div>
+          <button
+            className="button secondary"
+            disabled={loading || busy}
+            onClick={() => setRefresh((value) => value + 1)}
+          >
+            Обновить данные
+          </button>
         </div>
-        <button
-          className="button secondary"
-          disabled={loading || busy}
-          onClick={() => setRefresh((value) => value + 1)}
-        >
-          Обновить данные
-        </button>
-      </div>
+      )}
       {error && (
         <p role="alert" className="field-error">
           {error}
@@ -145,7 +148,7 @@ export default function AccountArea({
       )}
       {!loading && data && (
         <>
-          <div className="account-plan-summary">
+          <div className="account-plan-summary" hidden={page === "plans"}>
             <span className="proposal-status">
               Тариф {data.subscription.plan.label} · DEMO
             </span>
@@ -155,59 +158,12 @@ export default function AccountArea({
             </span>
           </div>
           {page === "plans" ? (
-            <>
-              <p className="demo-billing-note">
-                Тарифы демонстрационные. Переключение бесплатное: платёжные
-                данные не запрашиваются, деньги не списываются.
-              </p>
-              {!data.subscription.canSwitch && (
-                <p>
-                  Для выбора тарифа и сохранения предложений войдите в личный
-                  аккаунт.
-                </p>
-              )}
-              <div className="plan-grid">
-                {options.map((plan) => (
-                  <article
-                    className={`plan-card ${plan.code === data.subscription.plan.code ? "selected" : ""}`}
-                    key={plan.code}
-                  >
-                    <p className="eyebrow small">
-                      {plan.code === "PRO"
-                        ? "БОЛЬШЕ ВОЗМОЖНОСТЕЙ"
-                        : "ДЛЯ ПЕРВЫХ ПЛАНОВ"}
-                    </p>
-                    <h2>{plan.label}</h2>
-                    <p className="plan-price">{plan.demoPrice}</p>
-                    <ul>
-                      {plan.features.map((feature) => (
-                        <li key={feature}>{feature}</li>
-                      ))}
-                    </ul>
-                    <button
-                      className={`button full ${plan.code === "PRO" ? "primary" : "secondary"}`}
-                      disabled={
-                        busy ||
-                        !data.subscription.canSwitch ||
-                        plan.code === data.subscription.plan.code
-                      }
-                      onClick={() =>
-                        mutate("/api/account/plan", "PUT", { code: plan.code })
-                      }
-                    >
-                      {plan.code === data.subscription.plan.code
-                        ? "Текущий тариф"
-                        : `Выбрать ${plan.label} (DEMO)`}
-                    </button>
-                  </article>
-                ))}
-              </div>
-              <p className="proposal-notice">
-                При переходе на Free сохранённые документы остаются доступны для
-                чтения и редактирования. Если лимит превышен, новые предложения
-                доступны после выбора Pro.
-              </p>
-            </>
+            <PlansPresentation
+              subscription={data.subscription}
+              options={options}
+              busy={busy}
+              onChange={(code) => mutate("/api/account/plan", "PUT", { code })}
+            />
           ) : (
             <>
               <div className="account-stats">

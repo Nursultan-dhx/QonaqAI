@@ -4,7 +4,7 @@ import "./style.css";
 import EntryFlow from "./EntryFlow.jsx";
 import { BookingHistory } from "./components/BookingPanel.jsx";
 import PackageConfigurator from "./components/PackageConfigurator.jsx";
-import AssistantIntro from "./components/AssistantIntro.jsx";
+import AssistantChat from "./components/AssistantChat.jsx";
 import ProposalEditor from "./components/ProposalEditor.jsx";
 import AccountArea from "./components/AccountArea.jsx";
 const paths = {
@@ -298,9 +298,8 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     [proposalTarget, setProposalTarget] = useState(null),
     [accountRevision, setAccountRevision] = useState(0),
     [assistantStage, setAssistantStage] = useState("brief"),
-    [assistantBrief, setAssistantBrief] = useState(""),
-    [assistantPending, setAssistantPending] = useState(false),
-    [assistantError, setAssistantError] = useState(""),
+    [assistantChatKey, setAssistantChatKey] = useState(0),
+    [assistantConversation, setAssistantConversation] = useState(null),
     [assistantNotes, setAssistantNotes] = useState(null),
     [showNotifications, setShowNotifications] = useState(false),
     [toast, setToast] = useState(null),
@@ -442,8 +441,8 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
   }
   function newEvent() {
     setForm(emptyForm());
-    setAssistantBrief("");
-    setAssistantError("");
+    setAssistantChatKey((value) => value + 1);
+    setAssistantConversation(null);
     setAssistantNotes(null);
     setAssistantStage("brief");
     setEditingId(null);
@@ -455,7 +454,6 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     setForm({ ...event, description: event.description || "" });
     setEditingId(event.id);
     setFieldErrors({});
-    setAssistantBrief(event.description || "");
     setAssistantStage("parameters");
     setTab("catalog");
     setTimeout(
@@ -464,35 +462,21 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
       100,
     );
   }
-  async function startAssistant() {
-    if (assistantPending) return;
-    setAssistantPending(true);
-    setAssistantError("");
-    try {
-      const result = await api("/api/assistant/suggest", {
-        method: "POST",
-        body: JSON.stringify({ text: assistantBrief.trim() }),
-      });
-      setForm({
-        ...emptyForm(),
-        title: "",
-        date: "",
-        guests: "",
-        budget: "",
-        ...result.fields,
-        description: assistantBrief.trim(),
-        venueId: null,
-      });
-      setAssistantNotes(result);
-      setFieldErrors({});
-      setAssistantStage("parameters");
-      setTimeout(() => formRef.current?.querySelector("input")?.focus(), 260);
-    } catch (failure) {
-      if (failure.status === 401) onSessionExpired();
-      else setAssistantError(failure.message);
-    } finally {
-      setAssistantPending(false);
-    }
+  function applyAssistant(result) {
+    setForm({
+      ...emptyForm(),
+      date: "",
+      guests: "",
+      budget: "",
+      ...result.fields,
+      title: result.fields.title || "Моё мероприятие",
+      description: result.description,
+      venueId: result.venueId || null,
+    });
+    setAssistantNotes(result);
+    setFieldErrors({});
+    setAssistantStage("parameters");
+    setTimeout(() => formRef.current?.querySelector("input")?.focus(), 260);
   }
   function startManualEntry() {
     setAssistantStage("parameters");
@@ -501,7 +485,8 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
   async function continueToVenues(event) {
     const saved = await saveEvent(event);
     if (saved) {
-      setAssistantStage("venues");
+      setAssistantStage(saved.venueId ? "estimate" : "venues");
+      if (saved.venueId) setServiceEvent(saved);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
@@ -662,13 +647,14 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
         {tab === "catalog" ? (
           <>
             {assistantStage === "brief" ? (
-              <AssistantIntro
-                brief={assistantBrief}
-                onBriefChange={setAssistantBrief}
-                onContinue={startAssistant}
+              <AssistantChat
+                key={assistantChatKey}
+                request={api}
+                cache={assistantConversation}
+                onUpdate={setAssistantConversation}
+                onApply={applyAssistant}
                 onManual={startManualEntry}
-                pending={assistantPending}
-                error={assistantError}
+                onSessionExpired={onSessionExpired}
               />
             ) : (
               <header className="assistant-flow-heading">
@@ -723,8 +709,8 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                         <div className="source-note" role="status">
                           <div>
                             <p>
-                              Демо-подсказки из вашего описания. Проверьте
-                              значения перед сохранением.
+                              Подсказки ИИ из вашего диалога. Проверьте значения
+                              перед сохранением.
                             </p>
                             {assistantNotes.missing.length > 0 && (
                               <p>
@@ -872,7 +858,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                         disabled={saving}
                         type="submit"
                       >
-                        {saving ? "Сохраняем…" : "Показать площадки"}
+                        {saving ? "Сохраняем…" : form.venueId ? "Перейти к смете" : "Показать площадки"}
                         <Icon name="arrow" size={17} />
                       </button>
                       {editingId && (

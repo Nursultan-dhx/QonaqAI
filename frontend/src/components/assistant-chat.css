@@ -1,0 +1,595 @@
+.qchat {
+  padding: 54px 0 48px;
+  color: #263e32;
+}
+.qchat-hero {
+  margin-bottom: 34px;
+}
+.qchat-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #52705b;
+}
+.qchat-spark {
+  font-size: 22px;
+  letter-spacing: 0;
+}
+.qchat-gemini {
+  font-size: 9px;
+  letter-spacing: 1.1px;
+  background: #e5ecdf;
+  padding: 6px 9px;
+  border-radius: 5px;
+}
+.qchat-hero h1 {
+  font-size: clamp(38px, 4.8vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -2px;
+  margin: 20px 0 18px;
+  font-weight: 500;
+}
+.qchat-hero em {
+  font-weight: 400;
+  color: #748369;
+}
+.qchat-hero > p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #6e786f;
+}
+.qchat-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 64px;
+  align-items: start;
+}
+.qchat-conversation {
+  min-width: 0;
+}
+.qchat-turn {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.qchat-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  height: 34px;
+  background: #496d56;
+  color: #fff;
+  border-radius: 11px;
+  font-size: 27px;
+  font-family: Georgia, serif;
+}
+.qchat-turn-content {
+  flex: 1;
+  min-width: 0;
+}
+.qchat-sender {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin: 0 0 8px;
+  color: #8a958b;
+}
+.qchat-bubble {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+.qchat-turn.user {
+  justify-content: flex-end;
+  margin-left: 54px;
+}
+.qchat-turn.user .qchat-turn-content {
+  flex: 0 1 auto;
+  max-width: 82%;
+}
+.qchat-turn.user .qchat-sender {
+  text-align: right;
+}
+.qchat-turn.user .qchat-bubble {
+  padding: 14px 20px;
+  border-radius: 18px 18px 3px 18px;
+  background: #e9eee5;
+  color: #314d3a;
+}
+.qchat-chips {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 14px 0 24px 48px;
+}
+.qchat-chips button {
+  background: #fff;
+  border: 1px solid #dce3d7;
+  color: #4b6753;
+  padding: 10px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  cursor: pointer;
+}
+.qchat-chips button:hover {
+  border-color: #5c7b62;
+  background: #f0f4ea;
+}
+.qchat-chips span {
+  font-size: 15px;
+}
+.qchat-composer {
+  border: 1px solid #d6dfd0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 32px #23402d08;
+  padding: 18px 20px 12px;
+}
+.qchat-composer:focus-within {
+  outline: 2px solid #b4c7ad;
+  outline-offset: 3px;
+}
+.qchat-composer textarea {
+  resize: vertical;
+  width: 100%;
+  min-height: 62px;
+  max-height: 200px;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent;
+  padding: 0;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #283e31;
+}
+.qchat-composer-bottom {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+.qchat-composer-bottom > span {
+  color: #909b8e;
+  font-size: 10px;
+}
+.qchat-composer button {
+  border: 0;
+  border-radius: 50%;
+  height: 39px;
+  width: 39px;
+  color: #fff;
+  background: #45694e;
+  font-size: 23px;
+  cursor: pointer;
+}
+.qchat-composer button:disabled {
+  background: #dce4d7;
+  color: #98a592;
+  cursor: default;
+}
+.qchat-footnote {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 13px;
+  color: #8b958a;
+  font-size: 10px;
+}
+.qchat-footnote button {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #c2cdba;
+  padding: 0 0 2px;
+  color: #6f806c;
+  font-size: 10px;
+  cursor: pointer;
+}
+.qchat-aside {
+  background: #e9eddf;
+  border-radius: 100px 100px 18px 18px;
+  padding: 34px 32px 26px;
+  margin-top: -150px;
+}
+.qchat-aside-symbol {
+  display: block;
+  text-align: right;
+  font-size: 62px;
+  font-weight: 300;
+  color: #6c8457;
+  line-height: 1;
+}
+.qchat-aside-label {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  margin: 30px 0 18px;
+  color: #74816b;
+}
+.qchat-aside h2 {
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+.qchat-aside h2 em {
+  color: #7a8a66;
+  font-weight: 400;
+}
+.qchat-aside > p:last-of-type {
+  font-size: 12px;
+  color: #7f8875;
+  line-height: 1.7;
+}
+.qchat-aside ol {
+  list-style: none;
+  padding: 15px 0 0;
+  margin: 15px 0 0;
+  border-top: 1px solid #ccd7be;
+}
+.qchat-aside li {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding: 9px 0;
+  font-size: 11px;
+  color: #69785d;
+}
+.qchat-aside li b {
+  font-size: 9px;
+  font-weight: 400;
+  color: #9aa88b;
+}
+.qchat.has-conversation .qchat-layout {
+  display: block;
+  max-width: 1030px;
+  margin: auto;
+}
+.qchat.has-conversation .qchat-hero {
+  max-width: 1030px;
+  margin: 0 auto 36px;
+}
+.qchat.has-conversation .qchat-hero h1 {
+  font-size: 36px;
+  letter-spacing: -1px;
+}
+.qchat.has-conversation .qchat-hero h1 br {
+  display: none;
+}
+.qchat.has-conversation .qchat-hero h1 em {
+  margin-left: 8px;
+}
+.qchat.has-conversation .qchat-hero > p {
+  display: none;
+}
+.qchat-thinking {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #839077;
+  font-size: 12px;
+  padding: 10px 0 22px 48px;
+}
+.qchat-thinking > span:first-child {
+  animation: qchat-pulse 1.3s infinite;
+}
+.qchat-dots {
+  letter-spacing: 3px;
+}
+.qchat-error {
+  padding: 16px 20px;
+  background: #fff5ed;
+  border: 1px solid #e9d3c3;
+  border-radius: 12px;
+  margin: 18px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.qchat-error p {
+  margin: 0 0 10px;
+}
+.qchat-error button {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #b3a38d;
+  padding: 0;
+  margin-right: 18px;
+  cursor: pointer;
+  color: #7b654b;
+}
+.qchat-ready {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  background: #e9f0e3;
+  border: 1px solid #d4e0cb;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin: 20px 0;
+}
+.qchat-ready strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+.qchat-ready span {
+  font-size: 11px;
+  color: #77866e;
+}
+.qchat-ready .button {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.qchat-cards-label {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #8a9682;
+  margin: 24px 0 12px;
+}
+.qchat-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.qchat-venue {
+  overflow: hidden;
+  border: 1px solid #dce3d5;
+  border-radius: 15px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.qchat-venue.is-selected {
+  border-color: #466d50;
+  box-shadow: 0 0 0 1px #466d50;
+}
+.qchat-venue-photo {
+  position: relative;
+  aspect-ratio: 1.5;
+  overflow: hidden;
+  background: #e7e9de;
+}
+.qchat-venue-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.qchat-venue-photo > span {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 8px;
+  padding: 5px 8px;
+  border-radius: 20px;
+  background: #fffffff0;
+  color: #365341;
+}
+.qchat-venue-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.qchat-hall {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #8c9685;
+  margin: 0 0 7px;
+}
+.qchat-venue h3 {
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 400;
+  margin: 0 0 10px;
+}
+.qchat-venue-facts {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.qchat-venue-facts span {
+  font-size: 9px;
+  color: #6c7c60;
+  background: #f1f4eb;
+  padding: 5px 7px;
+  border-radius: 4px;
+}
+.qchat-venue-reason {
+  font-size: 11px;
+  color: #7c8774;
+  line-height: 1.6;
+  margin: 13px 0;
+  flex: 1;
+}
+.qchat-venue-price {
+  font-size: 12px;
+  color: #4e6548;
+  margin: 4px 0 13px;
+}
+.qchat-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #edf2e7;
+  border: 0;
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: #426141;
+  font-size: 10px;
+  cursor: pointer;
+}
+.qchat-select:hover {
+  background: #dbe7d0;
+}
+.qchat-select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.qchat-catalog-note {
+  font-size: 9px !important;
+  color: #98a08f !important;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+.qchat-sr {
+  position: absolute;
+  left: -10000px;
+}
+.qchat button:focus-visible {
+  outline: 2px solid #6d895f;
+  outline-offset: 3px;
+}
+@keyframes qchat-pulse {
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+@media (max-width: 1000px) {
+  .qchat-layout {
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 30px;
+  }
+  .qchat-aside {
+    padding: 30px 25px;
+  }
+  .qchat-aside h2 {
+    font-size: 32px;
+  }
+  .qchat-card-grid {
+    gap: 10px;
+  }
+  .qchat-venue-info {
+    padding: 12px;
+  }
+  .qchat-venue h3 {
+    font-size: 18px;
+  }
+}
+@media (max-width: 700px) {
+  .qchat {
+    padding: 28px 0;
+  }
+  .qchat-layout {
+    display: block;
+  }
+  .qchat-aside {
+    display: none;
+  }
+  .qchat-hero h1 {
+    font-size: 43px;
+    letter-spacing: -1.5px;
+  }
+  .qchat-hero > p {
+    font-size: 14px;
+  }
+  .qchat-turn {
+    gap: 10px;
+  }
+  .qchat-avatar {
+    flex-basis: 28px;
+    height: 28px;
+    font-size: 23px;
+    border-radius: 8px;
+  }
+  .qchat-bubble {
+    font-size: 14px;
+  }
+  .qchat-chips {
+    margin-left: 38px;
+    gap: 7px;
+  }
+  .qchat-chips button {
+    font-size: 11px;
+    padding: 8px 11px;
+  }
+  .qchat-composer {
+    padding: 15px;
+    border-radius: 16px;
+  }
+  .qchat-composer-bottom > span {
+    max-width: 190px;
+    line-height: 1.5;
+  }
+  .qchat-turn.user {
+    margin-left: 25px;
+  }
+  .qchat-turn.user .qchat-turn-content {
+    max-width: 95%;
+  }
+  .qchat.has-conversation .qchat-hero h1 {
+    font-size: 28px;
+  }
+  .qchat.has-conversation .qchat-hero h1 br {
+    display: block;
+  }
+  .qchat.has-conversation .qchat-hero h1 em {
+    margin-left: 0;
+  }
+  .qchat-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .qchat-venue {
+    display: grid;
+    grid-template-columns: 115px minmax(0, 1fr);
+  }
+  .qchat-venue-photo {
+    height: 100%;
+    aspect-ratio: auto;
+    min-height: 205px;
+  }
+  .qchat-venue-photo > span {
+    left: 6px;
+    bottom: 8px;
+    font-size: 7px;
+    padding: 4px 5px;
+  }
+  .qchat-venue-info {
+    padding: 14px;
+  }
+  .qchat-venue h3 {
+    font-size: 20px;
+  }
+  .qchat-venue-reason {
+    font-size: 11px;
+    margin: 10px 0;
+  }
+  .qchat-ready {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 17px;
+  }
+  .qchat-ready button {
+    width: 100%;
+  }
+  .qchat-footnote {
+    line-height: 1.6;
+    font-size: 9px;
+  }
+  .qchat-thinking {
+    padding-left: 38px;
+    font-size: 10px;
+  }
+  .qchat-sender {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qchat-thinking > span:first-child {
+    animation: none;
+  }
+}

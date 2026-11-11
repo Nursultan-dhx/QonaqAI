@@ -13,11 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service @Transactional
 public class PlanService {
-    public record Option(Code code,String label,int maxProposals,boolean textExport,String demoPrice,List<String> features) {}
+    public record Option(Code code,String label,int maxProposals,boolean textExport,String demoPrice,List<String> features,int dailyAiMessages,boolean aiProposal) {}
     public record Subscription(Option plan,long savedProposals,boolean demoBilling,boolean canSwitch) {}
     private static final List<Option> OPTIONS=List.of(
-        new Option(Code.FREE,"Free",3,false,"0 ₸",List.of("Мероприятия, сметы и бронирования","Демо-помощник","До 3 сохранённых предложений")),
-        new Option(Code.PRO,"Pro",100,true,"4 990 ₸ / месяц · DEMO",List.of("Всё из Free","До 100 сохранённых предложений","Выгрузка предложений в TXT")));
+        new Option(Code.FREE,"Free",3,false,"0 ₸",List.of("10 ответов ИИ в день: вопросы и подбор площадок","Карточки площадок с фото и объяснением выбора","Расчёт сметы и до 3 сохранённых предложений","Личный кабинет и учебное бронирование"),10,false),
+        new Option(Code.PRO,"Pro",100,true,"4 990 ₸",List.of("100 ответов ИИ в день для проработки вариантов","ИИ пишет вступление к предложению под ваше событие","До 100 сохранённых предложений для разных проектов","Скачивание готового предложения в TXT","Все возможности Free"),100,true));
     private final AccountRepository accounts;
     private final AccountPlanRepository plans;
     private final ProposalRepository proposals;
@@ -51,6 +51,10 @@ public class PlanService {
     public void requireTextExport(SessionIdentity identity) {
         if (!current(identity).plan().textExport())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Выгрузка TXT доступна в демонстрационном тарифе Pro");
+    }
+    public void requireAiProposal(SessionIdentity identity) {
+        if (identity.accountId()==null || !current(identity).plan().aiProposal())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Текст предложения с ИИ доступен в Pro. Выберите Pro в разделе «Тарифы».");
     }
     private void lockAccount(SessionIdentity identity) {
         if (identity.accountId()==null) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Для сохранения предложений и выбора тарифа войдите в личный аккаунт.");
