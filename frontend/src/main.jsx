@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
 import EntryFlow from "./EntryFlow.jsx";
+import { BookingHistory } from "./components/BookingPanel.jsx";
 import PackageConfigurator from "./components/PackageConfigurator.jsx";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
@@ -1019,6 +1020,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                 </button>
               </div>
             )}
+            <BookingHistory request={api} onSessionExpired={onSessionExpired} />
           </section>
         )}
       </main>
@@ -1177,7 +1179,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
         </Modal>
       )}
       {serviceEvent && (
-        <Modal title="Пакет и предварительная смета" onClose={() => setServiceEvent(null)} wide>
+        <Modal title="Пакет, смета и бронирование" onClose={() => setServiceEvent(null)} wide>
           <PackageConfigurator
             key={serviceEvent.id}
             event={serviceEvent}

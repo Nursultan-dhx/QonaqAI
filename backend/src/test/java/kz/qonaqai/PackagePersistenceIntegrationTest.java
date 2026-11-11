@@ -35,6 +35,7 @@ class PackagePersistenceIntegrationTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper mapper;
     @Autowired EntityManager em;
+    @Autowired BookingRepository bookings;
     @Autowired PackageConfigurationRepository configurations;
     @Autowired EventEstimateRepository snapshots;
     @Autowired EventRepository events;
@@ -154,7 +155,7 @@ class PackagePersistenceIntegrationTest {
             .map(rate->rate.serviceType()==ServiceType.PHOTOGRAPHY ? new ServiceRate(rate.serviceType(),rate.displayName(),
                 rate.description(),rate.pricingUnit(),new java.math.BigDecimal("30000"),"KZT",true):rate).toList()));
         var noCalculation=mock(EstimateService.class);
-        var read=new PackageConfigurationService(events,configurations,snapshots,noCalculation,packages,newRates,venueRates);
+        var read=new PackageConfigurationService(events,configurations,snapshots,noCalculation,packages,newRates,venueRates,bookings);
         var loaded=read.load(SessionIdentity.DEMO,id);
         assertThat(loaded.currentEstimate().catalogsChanged()).isTrue();
         assertThat(loaded.currentEstimate().estimate().totalCost()).isEqualByComparingTo("580000");
@@ -163,7 +164,7 @@ class PackagePersistenceIntegrationTest {
         var creators=new ServiceCreatorRegistry(List.of(new PhotographerServiceCreator()));
         var calculator=new EstimateService(events,venues,new PackageAssembler(packages,newRates,creators),packages,newRates,venueRates);
         var current=calculator.preview(SessionIdentity.DEMO,id,new EstimateService.Request(PackageCode.BASIC,List.of(new ServiceSelection(ServiceType.PHOTOGRAPHY,2))));
-        var replacement=new PackageConfigurationService(events,configurations,snapshots,calculator,packages,newRates,venueRates);
+        var replacement=new PackageConfigurationService(events,configurations,snapshots,calculator,packages,newRates,venueRates,bookings);
         replacement.save(SessionIdentity.DEMO,id,new PackageConfigurationService.SaveRequest(PackageCode.BASIC,0L,
             current.packageCatalogVersion(),current.serviceCatalogVersion(),current.venueCatalogVersion(),
             current.eventInputToken(),current.pricingToken(),List.of(new ServiceSelection(ServiceType.PHOTOGRAPHY,2))));

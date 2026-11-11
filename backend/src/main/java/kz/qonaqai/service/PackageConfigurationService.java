@@ -27,6 +27,7 @@ public class PackageConfigurationService {
         public SavedPackage { services=List.copyOf(services); }
     }
     private final EventRepository events;
+    private final BookingRepository bookings;
     private final PackageConfigurationRepository configurations;
     private final EventEstimateRepository snapshots;
     private final EstimateService estimates;
@@ -35,8 +36,8 @@ public class PackageConfigurationService {
     private final DemoVenueCatalog venueRates;
     public PackageConfigurationService(EventRepository events,PackageConfigurationRepository configurations,
             EventEstimateRepository snapshots,EstimateService estimates,PackageCatalog packages,
-            ServiceCatalog services,DemoVenueCatalog venueRates) {
-        this.events=events; this.configurations=configurations; this.snapshots=snapshots;
+            ServiceCatalog services,DemoVenueCatalog venueRates,BookingRepository bookings) {
+        this.bookings=bookings; this.events=events; this.configurations=configurations; this.snapshots=snapshots;
         this.estimates=estimates; this.packages=packages; this.services=services; this.venueRates=venueRates;
     }
     public SavedPackage load(SessionIdentity identity,Long eventId) {
@@ -48,6 +49,8 @@ public class PackageConfigurationService {
     }
     public SavedPackage save(SessionIdentity identity,Long eventId,SaveRequest request) {
         var event=owned(identity,eventId);
+        if(bookings.existsByEventIdAndStatus(eventId,kz.qonaqai.domain.booking.BookingStatus.CONFIRMED))
+            throw new kz.qonaqai.domain.booking.BookingConflictException("EVENT_BOOKED","Перед изменением пакета или сметы отмените бронь");
         if(request==null || request.packageCode()==null || request.services()==null)
             throw new ServiceValidationException("Передайте пакет и список услуг");
         if(request.expectedConfigurationVersion()!=null && request.expectedConfigurationVersion()<0)

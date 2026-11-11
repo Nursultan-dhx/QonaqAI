@@ -38,6 +38,7 @@ public class EventPlan {
     public Long id() { return id; }
     public Long ownerId() { return ownerId; }
     public String title() { return title; }
+    public EventType type() { return type; }
     public LocalDate date() { return date; }
     public int guests() { return guests; }
     public BigDecimal budget() { return budget; }

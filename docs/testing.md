@@ -152,3 +152,62 @@ Maven. Firefox/сервер после проверок остановлены.
 Прежние тесты не ослаблялись. Test-compile не выдаётся за успешный test run.
 Заблокированных обязательных проверок нет. Полная модель и точные примеры:
 [ESTIMATE_PERSISTENCE_IMPLEMENTATION.md](ESTIMATE_PERSISTENCE_IMPLEMENTATION.md).
+
+## Module 04 — Booking, 11 ноября 2026
+
+Полный Maven `package`: **243/243**, 0 failures, 0 errors, 0 skipped.
+207 прежних проверок сохранены, добавлено 36 исполнений BookingIntegrationTest.
+Java release 21, compilation и исполняемый JAR — PASS. React production build — PASS.
+
+```sh
+# Из корня репозитория; существующий локальный Maven cache
+npm --prefix frontend run build
+mvn -f backend/pom.xml -o -B -Dmaven.repo.local="$PWD/.tools/m2" package
+# Отдельный запуск обязательных concurrency-тестов, если нужен только этот набор
+mvn -f backend/pom.xml -o -B -Dmaven.repo.local="$PWD/.tools/m2" \
+  '-Dtest=BookingIntegrationTest#concurrent*' test
+python3 scripts/check-booking-restart.py
+# При наличии собранного JAR Module 03 проверяется также upgrade:
+python3 scripts/check-booking-restart.py --baseline .tools/module03-baseline.jar
+```
+
+Concurrency: разные мероприятия/одна площадка, три повторения в независимых
+REQUIRES_NEW transactions/connections: ровно один CONFIRMED, один
+VENUE_UNAVAILABLE; после завершения потоков проверена ровно одна запись БД.
+Один event: один CONFIRMED/один EVENT_ALREADY_BOOKED. Разные Venue: оба commit.
+Отдельный финальный запуск concurrency-набора: 5/5, 0 failures/errors/skipped.
+
+Реальный file-H2 upgrade/restart: три группы PASS. Старые события/сметы
+пережили добавление booking-таблицы. CONFIRMED и занятость пережили restart.
+CANCELLED, сумма/ревизия и история пережили удаление event и следующий restart;
+слот доступен и успешно бронируется другим event. Скрипт создаёт/удаляет только
+свою TemporaryDirectory внутри `.tools`, рабочую `backend/data` не использует.
+
+Для браузера нужен запущенный **собранный JAR с отдельной тестовой H2** и
+Firefox с отдельным профилем. Node 22+ даёт встроенный WebSocket:
+
+```sh
+cp backend/target/qonaqai-0.1.0.jar .tools/module04-ui.jar
+PORT=18090 QONAQ_DB_URL='jdbc:h2:mem:booking-ui;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000' \
+  java -jar .tools/module04-ui.jar
+# Дождаться сообщения Tomcat started; следующие команды в другом терминале
+mkdir -p .tools/booking-firefox-profile
+firefox --headless --no-remote --profile "$PWD/.tools/booking-firefox-profile" \
+  --remote-debugging-port 19226 about:blank
+QONAQ_UI_TEST_BASE_URL=http://127.0.0.1:18090 \
+  QONAQ_BIDI_URL=ws://127.0.0.1:19226/session node scripts/check-booking-ui.mjs
+```
+
+Firefox: пять групп PASS — saved event/package/estimate, network retry и
+повторное подтверждение, отмена/recheck, устаревшая доступность с 409,
+потерянный HTTP-ответ после commit с восстановлением из истории, 390 px и
+общая история аккаунта. Скриншот `.tools/booking-ui/mobile.png` просмотрен.
+Проверка всей страницы выявила тесную мобильную шапку; уменьшен промежуток
+между её элементами на ширине до 420 px. Браузерный script использует уникальный
+URL, чтобы кеш index.html прежней сборки не подменял проверяемую версию.
+JAR сервера копируется отдельно, чтобы повторная сборка его не заменяла.
+Старые API и паттерны сохранены.
+Дополнительно повторены пять групп Firefox-регрессии сохранённых смет
+Module 03: все PASS, включая две вкладки, 409, поздний PUT и OUTDATED.
+
+Подробности и ограничения: [BOOKING_IMPLEMENTATION.md](BOOKING_IMPLEMENTATION.md).

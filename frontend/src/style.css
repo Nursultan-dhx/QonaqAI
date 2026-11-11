@@ -2136,3 +2136,9 @@ html {
 .sign-out {
   flex-shrink: 0;
 }
+
+@media (max-width: 420px) {
+  .header-inner {
+    gap: 6px;
+  }
+}

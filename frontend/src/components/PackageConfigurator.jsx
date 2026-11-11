@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import BookingPanel from "./BookingPanel.jsx";
 import EstimateBreakdown from "./EstimateBreakdown.jsx";
 import "./service-preview.css";
 import "./package-configurator.css";
@@ -439,6 +440,7 @@ export default function PackageConfigurator({
           outdated={outdated}
         />
       )}
+      {ready && <BookingPanel event={event} saved={saved} draftPending={dirty || !!preview || saving} request={request} onSessionExpired={onSessionExpired} />}
     </section>
   );
 }
