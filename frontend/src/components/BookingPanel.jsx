@@ -236,7 +236,6 @@ export default function BookingPanel({
   }
   return (
     <section className="booking-panel" aria-label="Бронирование площадки">
-      <h2>Бронирование площадки</h2>
       <p>
         Часовой пояс: <strong>Asia/Almaty (UTC+05:00)</strong>. Начало — в дату
         мероприятия, длительность до 24 часов. Это учебная бронь DEMO.

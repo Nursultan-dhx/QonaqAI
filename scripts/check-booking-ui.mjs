@@ -73,6 +73,19 @@ async function open(title) {
     `Array.from(document.querySelectorAll('.saved-card')).find(card=>card.querySelector('h2').textContent===${JSON.stringify(title)}).querySelector('.service-open').click()`,
   );
   await wait(
+    "!!document.querySelector('.booking-disclosure summary')",
+    "booking disclosure",
+  );
+  await check(
+    "!document.querySelector('.booking-disclosure').open",
+    "booking should start collapsed",
+  );
+  await click(".booking-disclosure summary");
+  await check(
+    "document.querySelector('[data-booking-start]').getClientRects().length > 0",
+    "booking controls visible after opening disclosure",
+  );
+  await wait(
     "!!document.querySelector('[data-booking-start]') && (!document.querySelector('[data-check-availability]').closest('fieldset').disabled || !!document.querySelector('.package-configurator [data-booking-status=CONFIRMED]'))",
     "booking panel loaded",
   );

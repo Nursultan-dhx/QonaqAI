@@ -1137,6 +1137,69 @@ html {
 .modal-wide {
   width: 800px;
 }
+.modal-backdrop.estimate-sheet-backdrop {
+  align-items: flex-end;
+  padding: 24px 20px 0;
+  overflow: hidden;
+}
+.modal.estimate-sheet {
+  display: flex;
+  flex-direction: column;
+  width: min(1440px, 100%);
+  height: min(900px, 89dvh);
+  max-height: none;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+  animation: estimate-sheet-enter 380ms cubic-bezier(0.22, 0.85, 0.32, 1) both;
+}
+.estimate-sheet > .modal-heading {
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 0;
+  padding: 27px clamp(18px, 3vw, 40px) 18px;
+  color: var(--ink);
+}
+.estimate-sheet > .modal-heading::before {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 52px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  background: #c6d1c4;
+  content: "";
+}
+.estimate-sheet > .modal-heading h2 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 39px);
+  line-height: 1.06;
+  overflow-wrap: anywhere;
+}
+.estimate-sheet > .modal-heading p {
+  margin: 6px 0 0;
+  color: #506257;
+}
+.estimate-sheet > .modal-heading .icon-button {
+  flex: 0 0 auto;
+}
+@keyframes estimate-sheet-enter {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (max-width: 700px) {
+  .modal-backdrop.estimate-sheet-backdrop {
+    padding: 12px 0 0;
+  }
+  .modal.estimate-sheet {
+    height: calc(100dvh - 12px);
+    border-radius: 14px 14px 0 0;
+  }
+}
 .modal-heading {
   display: flex;
   align-items: center;
@@ -1703,6 +1766,9 @@ html {
     width: 28px;
     height: 30px;
   }
+  .sign-out {
+    display: none;
+  }
   .main-shell {
     padding: 0 18px;
   }
@@ -2124,6 +2190,110 @@ html {
 .hero h1 {
   white-space: normal;
 }
+.assistant-flow-heading {
+  width: min(100%, 900px);
+  margin: 0 auto;
+  padding: clamp(42px, 7vw, 78px) 0 20px;
+  animation: assistant-enter 260ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.assistant-flow-heading > div {
+  max-width: 690px;
+}
+.assistant-flow-heading h1 {
+  margin: 0;
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.assistant-flow-heading > div > p:last-child {
+  max-width: 620px;
+  margin: 14px 0 0;
+  color: #516457;
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.6;
+}
+.assistant-back {
+  min-height: 42px;
+  margin-bottom: 22px;
+  padding: 6px 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 14px;
+}
+.assistant-back:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.assistant-workspace {
+  width: min(100%, 900px);
+  margin: 0 auto;
+  border-top: 0;
+  padding-top: 10px;
+  animation: assistant-enter 260ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.assistant-workspace.assistant-parameters,
+.assistant-workspace.assistant-venues {
+  display: block;
+}
+.assistant-parameters .planner {
+  position: static;
+  width: min(100%, 620px);
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 38px);
+  border-color: #dbe3d8;
+  border-radius: 20px;
+  box-shadow: 0 16px 46px rgb(38 65 48 / 7%);
+}
+.assistant-parameters .planner-heading {
+  display: none;
+}
+.assistant-parameters .planner label {
+  font-size: 13px;
+}
+.assistant-parameters .planner label input,
+.assistant-parameters .planner label select,
+.assistant-parameters .planner label textarea {
+  height: 46px;
+  margin-top: 8px;
+  padding-inline: 13px;
+  font-size: 15px;
+}
+.assistant-parameters .planner label textarea {
+  min-height: 84px;
+  padding-block: 12px;
+}
+.assistant-parameters .planner .button.primary {
+  min-height: 46px;
+  padding-inline: 17px;
+  font-size: 14px;
+}
+.assistant-parameters .planner-footnote {
+  font-size: 11px;
+}
+.assistant-venues .catalog {
+  width: 100%;
+}
+.assistant-venues .catalog-title {
+  margin-bottom: 15px;
+}
+.assistant-venues .catalog-title h2 {
+  display: none;
+}
+.assistant-venues .venue-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@keyframes assistant-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .planner-heading {
   margin-bottom: 20px;
 }
@@ -2140,5 +2310,27 @@ html {
 @media (max-width: 420px) {
   .header-inner {
     gap: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .assistant-flow-heading {
+    padding-top: 35px;
+  }
+  .assistant-workspace {
+    padding-top: 0;
+  }
+  .assistant-parameters .planner {
+    padding: 21px;
+    border-radius: 16px;
+  }
+  .assistant-parameters .planner form {
+    display: block;
+  }
+  .assistant-parameters .form-row {
+    display: grid;
+  }
+  .assistant-venues .venue-grid {
+    grid-template-columns: 1fr;
   }
 }
