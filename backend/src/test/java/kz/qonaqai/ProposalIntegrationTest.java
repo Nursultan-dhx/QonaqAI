@@ -32,6 +32,8 @@ class ProposalIntegrationTest extends PlanningIntegrationSupport {
     @Test void editedDocumentSurvivesJpaReloadAndHasActivityNotification() throws Exception {
         var session=account(); long id=event(session); saveQuote(session,id);
         var saved=proposal(session,id); long proposalId=saved.path("id").asLong();
+        em.flush(); em.clear();
+        assertThat(json(mvc.perform(get("/api/proposals/"+proposalId).session(session)).andExpect(status().isOk()))).isEqualTo(saved);
         send("PUT","/api/proposals/"+proposalId,session,Map.of("title","Для команды","body","Наш отредактированный текст","expectedVersion",0))
             .andExpect(status().isOk()).andExpect(jsonPath("$.version").value(1));
         em.flush(); em.clear();

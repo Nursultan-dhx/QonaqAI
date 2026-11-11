@@ -3,6 +3,7 @@ package kz.qonaqai.domain;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 /** A user-editable document with an immutable reference to the saved quote used to build it. */
 @Entity
@@ -23,10 +24,10 @@ public class Proposal {
     public Proposal(Long ownerId, Long eventId, Long estimateId, String sourceToken,
             BigDecimal knownSubtotal, boolean quoteComplete, String title, String body) {
         this.ownerId=ownerId; this.eventId=eventId; this.estimateId=estimateId; this.sourceToken=sourceToken;
-        this.knownSubtotal=knownSubtotal; this.quoteComplete=quoteComplete; this.createdAt=Instant.now();
+        this.knownSubtotal=knownSubtotal; this.quoteComplete=quoteComplete; this.createdAt=Instant.now().truncatedTo(ChronoUnit.MICROS);
         edit(title,body);
     }
-    public void edit(String title, String body) { this.title=title.strip(); this.body=body.strip(); updatedAt=Instant.now(); }
+    public void edit(String title, String body) { this.title=title.strip(); this.body=body.strip(); updatedAt=Instant.now().truncatedTo(ChronoUnit.MICROS); }
     public Long id() { return id; }
     public Long eventId() { return eventId; }
     public Long estimateId() { return estimateId; }

@@ -145,6 +145,24 @@
   }
 }
 @media (max-width: 700px) {
+  .site-header {
+    height: 106px;
+  }
+  .header-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 58px 48px;
+    gap: 0;
+  }
+  .site-header .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .site-header .header-actions {
+    grid-column: 2;
+    grid-row: 1;
+    margin-left: 0;
+  }
   .account-area {
     padding-top: 28px;
   }
@@ -171,6 +189,8 @@
     padding: 20px;
   }
   .site-header nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
     overflow-x: auto;
     white-space: nowrap;
@@ -178,7 +198,8 @@
   }
   .site-header nav .nav-link {
     flex-shrink: 0;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: 11px;
   }
 }
