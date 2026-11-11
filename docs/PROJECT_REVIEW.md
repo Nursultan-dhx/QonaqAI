@@ -1,5 +1,8 @@
 # Event Studio / QonaqAI — Project Review
 
+> Historical audit of revision 05fb84c. Later modules changed the implementation;
+> current modules 05–06 are documented in [MODULES_05_06.md](MODULES_05_06.md).
+
 Audit date: 11 November 2026. Reviewed revision: **05fb84c**, branch **main**.
 
 Scope: analysis of the existing repository and recommendations for the SDP final project. All designs below are proposals, not implemented functionality. The only new project document from this audit is **docs/PROJECT_REVIEW.md**. No source, configuration, schema, application database, or dependency installation was changed.

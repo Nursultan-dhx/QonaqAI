@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "description suggestions are editable",
+    "proposal saves and reopens with edited text after reload",
+    "demo Pro selection and actual TXT download",
+    "mobile dashboard and all navigation entries remain accessible",
+    "no uncaught browser errors"
+  ],
+  "errors": []
+}
