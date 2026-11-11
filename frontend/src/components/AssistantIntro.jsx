@@ -40,12 +40,20 @@ export default function AssistantIntro({
               disabled={!brief.trim() || pending}
               type="submit"
             >
-              {pending ? "Разбираем описание…" : "Продолжить"} <span aria-hidden="true">→</span>
+              {pending ? "Разбираем описание…" : "Продолжить"}{" "}
+              <span aria-hidden="true">→</span>
             </button>
           </div>
         </form>
-        <small>Демо-помощник распознаёт тип, дату, гостей и бюджет. Все подсказки можно исправить.</small>
-        {error && <p role="alert" className="field-error">{error}</p>}
+        <small>
+          Демо-помощник распознаёт тип, дату, гостей и бюджет. Все подсказки
+          можно исправить.
+        </small>
+        {error && (
+          <p role="alert" className="field-error">
+            {error}
+          </p>
+        )}
         <button
           className="assistant-intro-manual"
           onClick={onManual}

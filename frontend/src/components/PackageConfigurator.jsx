@@ -20,6 +20,7 @@ export default function PackageConfigurator({
   event,
   request,
   onSessionExpired,
+  onCreateProposal,
 }) {
   const [metadata, setMetadata] = useState(null);
   const [ready, setReady] = useState(false);
@@ -470,6 +471,28 @@ export default function PackageConfigurator({
                 onSessionExpired={onSessionExpired}
               />
             </details>
+          )}
+          {onCreateProposal && (
+            <div className="proposal-create">
+              <button
+                type="button"
+                className="button secondary full"
+                disabled={
+                  !saved?.configured ||
+                  dirty ||
+                  !!preview ||
+                  saving ||
+                  outdated ||
+                  saved?.currentEstimate?.catalogsChanged
+                }
+                onClick={onCreateProposal}
+              >
+                Подготовить предложение
+              </button>
+              <p className="service-preview-notice">
+                Сначала сохраните актуальную смету.
+              </p>
+            </div>
           )}
         </div>
       </aside>

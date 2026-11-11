@@ -5,6 +5,7 @@ import EntryFlow from "./EntryFlow.jsx";
 import { BookingHistory } from "./components/BookingPanel.jsx";
 import PackageConfigurator from "./components/PackageConfigurator.jsx";
 import AssistantIntro from "./components/AssistantIntro.jsx";
+import ProposalEditor from "./components/ProposalEditor.jsx";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
   pin: "M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
@@ -293,6 +294,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     [showCompare, setShowCompare] = useState(false),
     [detail, setDetail] = useState(null),
     [serviceEvent, setServiceEvent] = useState(null),
+    [proposalTarget, setProposalTarget] = useState(null),
     [assistantStage, setAssistantStage] = useState("brief"),
     [assistantBrief, setAssistantBrief] = useState(""),
     [assistantPending, setAssistantPending] = useState(false),
@@ -466,10 +468,19 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     setAssistantError("");
     try {
       const result = await api("/api/assistant/suggest", {
-        method: "POST", body: JSON.stringify({ text: assistantBrief.trim() }),
+        method: "POST",
+        body: JSON.stringify({ text: assistantBrief.trim() }),
       });
-      setForm({ ...emptyForm(), title: "", date: "", guests: "", budget: "",
-        ...result.fields, description: assistantBrief.trim(), venueId: null });
+      setForm({
+        ...emptyForm(),
+        title: "",
+        date: "",
+        guests: "",
+        budget: "",
+        ...result.fields,
+        description: assistantBrief.trim(),
+        venueId: null,
+      });
       setAssistantNotes(result);
       setFieldErrors({});
       setAssistantStage("parameters");
@@ -477,7 +488,9 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     } catch (failure) {
       if (failure.status === 401) onSessionExpired();
       else setAssistantError(failure.message);
-    } finally { setAssistantPending(false); }
+    } finally {
+      setAssistantPending(false);
+    }
   }
   function startManualEntry() {
     setAssistantStage("parameters");
@@ -692,13 +705,36 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                       </div>
                     </div>
                     <form onSubmit={continueToVenues} noValidate>
-                      {assistantNotes && <div className="source-note" role="status">
-                        <div>
-                          <p>Демо-подсказки из вашего описания. Проверьте значения перед сохранением.</p>
-                          {assistantNotes.missing.length > 0 && <p>Уточните: {assistantNotes.missing.map(key => ({type:"тип мероприятия",date:"дату",guests:"гостей",budget:"бюджет"})[key]).join(", ")}.</p>}
-                          {assistantNotes.warnings.map(note => <p key={note}>{note}</p>)}
+                      {assistantNotes && (
+                        <div className="source-note" role="status">
+                          <div>
+                            <p>
+                              Демо-подсказки из вашего описания. Проверьте
+                              значения перед сохранением.
+                            </p>
+                            {assistantNotes.missing.length > 0 && (
+                              <p>
+                                Уточните:{" "}
+                                {assistantNotes.missing
+                                  .map(
+                                    (key) =>
+                                      ({
+                                        type: "тип мероприятия",
+                                        date: "дату",
+                                        guests: "гостей",
+                                        budget: "бюджет",
+                                      })[key],
+                                  )
+                                  .join(", ")}
+                                .
+                              </p>
+                            )}
+                            {assistantNotes.warnings.map((note) => (
+                              <p key={note}>{note}</p>
+                            ))}
+                          </div>
                         </div>
-                      </div>}
+                      )}
                       <label>
                         Название
                         <input
@@ -1119,6 +1155,12 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                       >
                         Настроить пакет и смету
                       </button>
+                      <button
+                        className="button secondary full service-open"
+                        onClick={() => setProposalTarget({ eventId: event.id })}
+                      >
+                        Подготовить предложение
+                      </button>
                     </article>
                   );
                 })}
@@ -1311,6 +1353,32 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
             event={serviceEvent}
             request={api}
             onSessionExpired={onSessionExpired}
+            onCreateProposal={() => {
+              setServiceEvent(null);
+              setProposalTarget({ eventId: serviceEvent.id });
+            }}
+          />
+        </Modal>
+      )}
+      {proposalTarget && (
+        <Modal
+          title="Предложение для мероприятия"
+          onClose={() => setProposalTarget(null)}
+          wide
+        >
+          <ProposalEditor
+            target={proposalTarget}
+            request={api}
+            onSessionExpired={onSessionExpired}
+            onSaved={async () => {
+              try {
+                const notifications = await api("/api/notifications");
+                setData((prev) => ({ ...prev, notifications }));
+              } catch (failure) {
+                if (failure.status === 401) onSessionExpired();
+                else notify(failure.message, true);
+              }
+            }}
           />
         </Modal>
       )}

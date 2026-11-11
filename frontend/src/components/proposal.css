@@ -1,0 +1,54 @@
+.proposal-editor {
+  padding: 20px 28px 28px;
+}
+.proposal-editor form {
+  display: grid;
+  gap: 18px;
+}
+.proposal-editor label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+.proposal-editor input,
+.proposal-editor textarea {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+}
+.proposal-editor textarea {
+  line-height: 1.6;
+  resize: vertical;
+  font-weight: 400;
+}
+.proposal-notice {
+  color: #617168;
+  line-height: 1.6;
+  font-size: 15px;
+}
+.proposal-status {
+  display: inline-block;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: var(--pale);
+  color: var(--accent);
+  font-size: 14px;
+}
+.proposal-status.outdated,
+.proposal-status.event_removed {
+  background: #fff2dc;
+  color: #825719;
+}
+.proposal-create {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+@media (max-width: 600px) {
+  .proposal-editor {
+    padding: 16px;
+  }
+}
