@@ -24,7 +24,7 @@ public class EstimateService {
                            BigDecimal packageSubtotal, BigDecimal venueCharge, BigDecimal knownSubtotal,
                            BigDecimal totalCost, BigDecimal eventBudget, BigDecimal remainingBudget,
                            BigDecimal budgetExcess, BigDecimal budgetUsedPercent, BudgetStatus budgetStatus,
-                           List<EstimateLine> lines) {
+                           List<EstimateLine> lines, String eventInputToken, String pricingToken) {
         public Estimate { lines = List.copyOf(lines); }
     }
 
@@ -77,9 +77,13 @@ public class EstimateService {
             : complete ? new BigDecimal("0.00") : null;
         BigDecimal percent = complete ? knownSubtotal.multiply(new BigDecimal("100"))
             .divide(budget, 2, RoundingMode.HALF_UP) : null;
+        String eventToken=EventInputSnapshot.capture(event).token();
+        String priceToken=EstimateTokens.hash("estimate-v1",eventToken,request.packageCode().name(),
+            packages.options().catalogVersion(),services.options().catalogVersion(),venueRates.catalogVersion(),
+            lines.toString(),packageSubtotal.toPlainString(),String.valueOf(venueCharge),status.name());
         return new Estimate(event.id(), venue.id(), request.packageCode(), "KZT", complete, true,
             packages.options().catalogVersion(), services.options().catalogVersion(), venueRates.catalogVersion(),
             packageSubtotal, venueCharge, knownSubtotal, complete ? knownSubtotal : null,
-            budget, remaining, excess, percent, status, lines);
+            budget, remaining, excess, percent, status, lines, eventToken, priceToken);
     }
 }

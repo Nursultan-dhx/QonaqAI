@@ -100,3 +100,22 @@
     min-width: 470px;
   }
 }
+
+.estimate-save {
+  margin: 10px 0 0 10px;
+}
+.package-save-state {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.package-save-state p:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 600px) {
+  .estimate-save {
+    display: block;
+    margin-left: 0;
+  }
+}

@@ -96,3 +96,59 @@ backend/data не использовалась. Заблокированных �
 
 Повторение браузерной проверки, контракт API, все тарифы и ограничения:
 [DECORATOR_IMPLEMENTATION.md](DECORATOR_IMPLEMENTATION.md).
+
+## Module 03 Phase 3 — сохранение конфигураций и snapshots, 11 ноября 2026
+
+**207 тестов выполнено, 207 прошло, 0 failures, 0 errors, 0 skipped.**
+Прежние 172 теста не изменялись. Добавлены 35: SavedConfigurationTest 6,
+EstimateSnapshotTest 1, PackagePersistenceIntegrationTest 24,
+PackageConcurrencyIntegrationTest 4. Всего 92 unit и 115 integration.
+
+Из backend выполнены команды с существующим локальным cache:
+
+```sh
+mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test-compile
+mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 test
+mvn -o -B -Dmaven.repo.local=/home/morninginheaven/aitu/sdp/QonaqAI/.tools/m2 package
+```
+
+Финальный package: BUILD SUCCESS, 207/207 и исполняемый JAR, Java release 21.
+Frontend: npm run build — PASS, Vite 29 modules. Тестовые БД отдельные;
+пользовательская backend/data не открывалась. Конфигурации, snapshot lines,
+история, ожидаемые версии/тарифы/контекст, demo/ownership и strict JSON покрыты.
+Настоящие отдельные транзакции проверили две concurrent initial/update saves;
+искусственный DB constraint failure подтвердил rollback до предыдущей сметы.
+
+Реальный restart и additive upgrade проверены скриптом:
+
+```sh
+python3 scripts/check-estimate-restart.py --baseline /tmp/qonaqai-phase2-baseline.jar
+```
+
+Пять групп PASS. Phase 2 создала account/event/venues/notifications в новой
+временной **файловой** H2. Phase 3 сохранила старые данные и STANDARD + photo3
+за 670000. После stop/start отдельной JVM весь saved JSON совпал. Изменённые
+только внутри test-owned JAR каталоги дали новый preview 735000, сохранив
+старый snapshot 670000 и revision 1; explicit save создал revision 2.
+Скрипт очищает только собственный TemporaryDirectory, рабочую БД не использует.
+
+Firefox BiDi, отдельная in-memory H2/сервер 18087:
+
+```sh
+QONAQ_UI_TEST_BASE_URL=http://127.0.0.1:18087 QONAQ_BIDI_URL=ws://127.0.0.1:19227/session node scripts/check-estimate-ui.mjs
+QONAQ_UI_TEST_BASE_URL=http://127.0.0.1:18087 QONAQ_BIDI_URL=ws://127.0.0.1:19227/session node scripts/check-saved-estimate-ui.mjs
+```
+
+Прежние 8 групп и новые 5 групп PASS: save/reopen/full reload,
+STANDARD/PREMIUM, две вкладки и 409, refresh с сохранением draft, duplicate save,
+изменение draft при задержанном PUT, validation error/retry, OUTDATED после
+изменения гостей, новый snapshot, over-budget save. Desktop 1280, tablet 768,
+mobile 390 проверены без overflow, мобильный screenshot просмотрен.
+Тестовый Java запущен из отдельной frozen-копии JAR, которую не перезаписывает
+Maven. Firefox/сервер после проверок остановлены.
+
+Новые тестовые ошибки при разработке исправлены: inverse JPA cascade collection,
+неверное expected 600000 вместо 590000 при смене photo rate, escaped JSON fixture.
+Прежние тесты не ослаблялись. Test-compile не выдаётся за успешный test run.
+Заблокированных обязательных проверок нет. Полная модель и точные примеры:
+[ESTIMATE_PERSISTENCE_IMPLEMENTATION.md](ESTIMATE_PERSISTENCE_IMPLEMENTATION.md).

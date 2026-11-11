@@ -79,6 +79,7 @@ async function api(path, options = {}) {
       data?.message || "Не удалось выполнить запрос. Попробуйте ещё раз.",
     );
     error.status = response.status;
+    error.code = data?.code;
     error.fields = data?.errors || {};
     throw error;
   }

@@ -11,6 +11,22 @@ import java.util.*;
 
 @RestControllerAdvice
 public class ApiErrors {
+    @ExceptionHandler(kz.qonaqai.domain.estimate.PackageConflictException.class)
+    public ResponseEntity<?> packageConflict(kz.qonaqai.domain.estimate.PackageConflictException ex) {
+        return ResponseEntity.status(409).body(Map.of("message",ex.getMessage(),"errors",Map.of(),"code",ex.code()));
+    }
+    @ExceptionHandler({org.springframework.dao.OptimisticLockingFailureException.class,
+        org.springframework.dao.PessimisticLockingFailureException.class})
+    public ResponseEntity<?> concurrentWrite(Exception ex) {
+        return ResponseEntity.status(409).body(Map.of("message","Данные изменяются другим запросом. Обновите данные и повторите.",
+            "errors",Map.of(),"code","CONCURRENT_UPDATE"));
+    }
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<?> persistenceFailure(Exception ex) {
+        org.slf4j.LoggerFactory.getLogger(ApiErrors.class).error("Persistence operation failed",ex);
+        return ResponseEntity.status(500).body(Map.of("message","Не удалось сохранить данные. Повторите попытку.","errors",Map.of()));
+    }
+
     @ExceptionHandler(kz.qonaqai.domain.pricing.ServiceValidationException.class)
     public ResponseEntity<?> serviceValidation(kz.qonaqai.domain.pricing.ServiceValidationException ex) {
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage(), "errors", Map.of()));

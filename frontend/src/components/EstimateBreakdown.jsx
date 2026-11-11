@@ -18,11 +18,18 @@ const units = {
   PER_GUEST: "за гостя",
 };
 
-export default function EstimateBreakdown({ estimate }) {
+export default function EstimateBreakdown({
+  estimate,
+  mode = "preview",
+  outdated = false,
+}) {
   const exceeded = estimate.budgetStatus === "EXCEEDED";
   return (
     <section className="service-result estimate-result" aria-live="polite">
-      <h3>Предварительная смета · DEMO</h3>
+      <h3>
+        {mode === "saved" ? "Сохранённая смета" : "Предварительный расчёт"} ·
+        DEMO
+      </h3>
       <div className="service-table-scroll">
         <table>
           <caption>
@@ -127,13 +134,15 @@ export default function EstimateBreakdown({ estimate }) {
         role="status"
         data-budget-status={estimate.budgetStatus}
       >
-        {exceeded
-          ? estimate.quoteComplete
-            ? "Стоимость превышает бюджет. Можно изменить пакет или набор услуг."
-            : "Известные начисления уже превышают бюджет; аренда пока неизвестна."
-          : estimate.budgetStatus === "WITHIN_BUDGET"
-            ? "Демонстрационная смета укладывается в бюджет."
-            : "Без цены аренды нельзя определить полную стоимость и достаточность бюджета."}
+        {outdated
+          ? "Исторический расчёт: параметры мероприятия изменились. Для актуальной сметы нужен пересчёт."
+          : exceeded
+            ? estimate.quoteComplete
+              ? "Стоимость превышает бюджет. Можно изменить пакет или набор услуг."
+              : "Известные начисления уже превышают бюджет; аренда пока неизвестна."
+            : estimate.budgetStatus === "WITHIN_BUDGET"
+              ? "Демонстрационная смета укладывается в бюджет."
+              : "Без цены аренды нельзя определить полную стоимость и достаточность бюджета."}
       </p>
       {!estimate.quoteComplete && (
         <p>
@@ -141,7 +150,11 @@ export default function EstimateBreakdown({ estimate }) {
           считается нулевой.
         </p>
       )}
-      <p>Предварительная смета — данные пока не сохранены.</p>
+      <p>
+        {mode === "saved"
+          ? "Это сохранённый снимок цен и параметров мероприятия."
+          : "Предварительная смета — данные пока не сохранены."}
+      </p>
     </section>
   );
 }

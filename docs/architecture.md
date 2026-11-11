@@ -69,8 +69,8 @@ ServicePreviewService использует EventRepository и сохранённ
 
 В Phase 1 React открывал отдельный ServicePreviewPanel. В Phase 2 его место
 занял единый PackageConfigurator, а прежний REST endpoint расчёта услуг
-сохранён без изменений. Настройки и смета пока не сохраняются; устаревшие
-запросы отменяются. Бронирование не реализовано.
+сохранён без изменений. Phase 3 добавляет явное сохранение пакета и снимков
+сметы; устаревшие запросы отменяются. Бронирование не реализовано.
 
 Участники, API, правила, диаграмма и результаты проверок:
 [FACTORY_METHOD_IMPLEMENTATION.md](FACTORY_METHOD_IMPLEMENTATION.md).
@@ -96,13 +96,38 @@ quoteComplete=false; достаточность бюджета не объявл
 React открывает PackageConfigurator через «Настроить пакет и смету».
 Отдельный optional-черновик переживает переключение пакета внутри окна;
 включённые типы исключаются из платного запроса. EstimateBreakdown форматирует
-серверный ответ. Всё остаётся preview-only, без новых JPA-таблиц.
+серверный ответ. Сам preview по-прежнему ничего не записывает; сохранение
+Phase 3 реализовано отдельной транзакционной операцией ниже.
 
 Полная схема, тарифы, API, проверенные примеры и план сохранения:
 [DECORATOR_IMPLEMENTATION.md](DECORATOR_IMPLEMENTATION.md).
 
+## Сохранение пакета и сметы (Module 03, Phase 3)
+
+React → PackageConfigurationController → PackageConfigurationService → JPA → H2.
+Новые EventPackageConfiguration и EventServiceSelection хранят текущий выбор;
+EventEstimate и SavedEstimateLine — immutable pricing snapshots по ревизиям.
+UNIQUE(event_id) и @Version защищают конфигурацию, FK/уникальные selection и
+line codes — состав. Существующие event/account/venue/notification таблицы
+не меняются; Hibernate update добавляет только новые таблицы. Реальный upgrade
+с предыдущего JAR и restart проверены на отдельной файловой H2.
+
+PUT /api/events/{id}/package берёт owned-event row lock, проверяет expected
+version/три catalog versions/event и pricing tokens, вызывает существующий
+EstimateService → Factory Method → Decorator и атомарно сохраняет результат.
+GET /package и /package/estimates читают только frozen monetary snapshot.
+Edit/delete event используют тот же root lock; новая схема EventPlan не нужна.
+Дата/гости/venue/budget snapshot сравнивается с текущим event: CURRENT/OUTDATED.
+Catalog version drift отмечается отдельно; история не пересчитывается.
+
+PackageConfigurator восстанавливает saved state, сохраняет явно и различает
+черновик/preview/saved. Поздний save не затирает более новый draft, 409 требует
+явного обновления baseline. В БД нет Java decorator graphs.
+Полная модель, ER, API и фактические проверки:
+[ESTIMATE_PERSISTENCE_IMPLEMENTATION.md](ESTIMATE_PERSISTENCE_IMPLEMENTATION.md).
+
 ## Передача следующих этапов
 
-Factory Method, Decorator, пакеты и полная предварительная смета реализованы; следующий шаг Бейбарыса — сохранение конфигурации и снимков сметы. Дастан добавляет бронирование, ИИ, предложение и Facade/Builder. Стоимость услуг должна рассчитываться в Java. Выбор площадки на этом этапе не является бронированием.
+Factory Method, Decorator, пакеты, полная смета и сохранение конфигураций/снимков реализованы. Дастан добавляет бронирование, ИИ, предложение и Facade/Builder. Стоимость услуг должна рассчитываться в Java. Выбор площадки на этом этапе не является бронированием.
 
 Данные площадок и ссылок находятся в `backend/src/main/resources/catalog.json`. Для расширения до 50 добавьте проверенные записи с уникальными стабильными ID и фотографии в `static/images`. При старте каталог обновляется по ID, мероприятия сохраняются. Для многопользовательского публичного размещения потребуются отдельные пользователи, авторизация, миграции и серверная БД; текущая версия предназначена для локальной демонстрации.

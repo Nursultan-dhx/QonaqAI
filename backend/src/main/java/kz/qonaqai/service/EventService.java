@@ -17,8 +17,9 @@ public class EventService {
     private final VenueRepository venues;
     private final NotificationRepository notifications;
     private final EventSubject subject;
-    public EventService(EventRepository events,VenueRepository venues,NotificationRepository notifications,EventSubject subject) {
-        this.events=events;this.venues=venues;this.notifications=notifications;this.subject=subject;
+    private final PackageConfigurationRepository packages;
+    public EventService(EventRepository events,VenueRepository venues,NotificationRepository notifications,EventSubject subject,PackageConfigurationRepository packages) {
+        this.events=events;this.venues=venues;this.notifications=notifications;this.subject=subject;this.packages=packages;
     }
     @Transactional(readOnly = true)
     public List<EventPlan> all(SessionIdentity identity) {
@@ -44,11 +45,12 @@ public class EventService {
     public void delete(SessionIdentity identity, Long id) {
         var event = findOwnedEvent(identity, id);
         notifications.deleteByEventIdAndOwnerId(id, identity.accountId());
+        packages.findByEvent_Id(id).ifPresent(packages::delete);
         events.delete(event);
     }
 
     private EventPlan findOwnedEvent(SessionIdentity identity, Long id) {
-        return events.findByIdAndOwnerId(id, identity.accountId())
+        return events.findOwnedForUpdate(id, identity.accountId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Мероприятие не найдено"));
     }
     private ResponseStatusException bad(String message) { return new ResponseStatusException(HttpStatus.BAD_REQUEST,message); }
