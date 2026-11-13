@@ -28,7 +28,7 @@ class EstimateCatalogTest {
         }
         assertThat(rates.find(1L).orElseThrow().price()).isEqualTo(new BigDecimal("500000.00"));
         assertThat(rates.find(999L)).isEmpty();
-        assertThat(rates.catalogVersion()).isEqualTo("demo-venues-v1");
+        assertThat(rates.catalogVersion()).isEqualTo("demo-venues-v2");
     }
 
     @Test void catalogsRequireVersionAndDefinitionLists() {

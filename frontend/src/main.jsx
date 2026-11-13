@@ -973,7 +973,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                               >
                                 <Photo
                                   src={v.imageUrl}
-                                  alt={`${v.name} — ${v.hall}`}
+                                  alt={`${v.name} — фотография площадки`}
                                 />
                               </button>
                               <span className="venue-city">
@@ -1013,7 +1013,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                                 </span>
                                 <span>
                                   <Icon name="square" size={14} />
-                                  {v.area} м²
+                                  {v.area == null ? "Площадь уточняется" : `${v.area} м²`}
                                 </span>
                               </div>
                               <div className="venue-bottom">
@@ -1237,7 +1237,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
           <Photo
             className="detail-image"
             src={detail.imageUrl}
-            alt={`${detail.name} — ${detail.hall}`}
+            alt={`${detail.name} — фотография площадки`}
             loading="eager"
           />
           <div className="detail-body">
@@ -1259,7 +1259,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                 </div>
               )}
               <div>
-                <strong>{detail.area} м²</strong>
+                <strong>{detail.area == null ? "Уточняется" : `${detail.area} м²`}</strong>
                 <span>площадь зала</span>
               </div>
             </div>
@@ -1277,7 +1277,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                 Цена и свободные даты уточняются у площадки.
                 <br />
                 <a href={detail.sourceUrl} target="_blank" rel="noreferrer">
-                  Официальный источник
+                  Источник данных
                   <Icon name="external" size={12} />
                 </a>
                 {detail.imageSourceUrl && (
@@ -1333,7 +1333,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                   <dt>Банкетная вместимость</dt>
                   <dd>До {v.capacity} гостей</dd>
                   <dt>Площадь</dt>
-                  <dd>{v.area} м²</dd>
+                  <dd>{v.area == null ? "Уточняется" : `${v.area} м²`}</dd>
                   <dt>Стоимость</dt>
                   <dd>{v.price ? money(v.price) : "По запросу"}</dd>
                   <dt>Адрес</dt>

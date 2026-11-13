@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Verified venue information. Missing published prices remain null. */
+/** Sourced venue information. Unpublished prices and floor areas remain null. */
 @Entity
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Venue {
@@ -24,7 +24,7 @@ public class Venue {
     private String verifiedAt;
     private int capacity;
     private Integer theaterCapacity;
-    private double area;
+    private Double area;
     private BigDecimal price;
     @ElementCollection(fetch = FetchType.EAGER) @OrderColumn(name="feature_order")
     private List<String> features = new ArrayList<>();
@@ -35,5 +35,5 @@ public class Venue {
     public String address() { return address; }
     public int capacity() { return capacity; }
     public BigDecimal price() { return price; }
-    public double area() { return area; }
+    public Double area() { return area; }
 }

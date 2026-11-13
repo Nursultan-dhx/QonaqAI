@@ -39,6 +39,17 @@ class EstimateIntegrationTest {
         {"type":"MUSIC","hours":3},{"type":"CATERING"}]}
         """;
 
+    @Test void newlyAddedVenueProducesACompleteDemoEstimate() throws Exception {
+        var owner=demo();
+        long id=create(owner,50L,2000000);
+        mvc.perform(post(path(id)).session(owner).contentType("application/json")
+            .content("{\"packageCode\":\"BASIC\",\"services\":[]}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.quoteComplete").value(true))
+            .andExpect(jsonPath("$.venueCharge").value(250000))
+            .andExpect(jsonPath("$.venueCatalogVersion").value("demo-venues-v2"));
+    }
+
     @Test void publicMetadataShowsThreeTrustedPackagesAndInclusions() throws Exception {
         mvc.perform(get("/api/package-options")).andExpect(status().isOk())
             .andExpect(jsonPath("$.catalogVersion").value("demo-packages-v1"))
@@ -77,7 +88,7 @@ class EstimateIntegrationTest {
             .andExpect(jsonPath("$.lines.length()").value(6))
             .andExpect(jsonPath("$.lines[0].priceSource").value("DEMO"))
             .andExpect(jsonPath("$.serviceCatalogVersion").value("demo-v1"))
-            .andExpect(jsonPath("$.venueCatalogVersion").value("demo-venues-v1"))
+            .andExpect(jsonPath("$.venueCatalogVersion").value("demo-venues-v2"))
             .andReturn().getResponse().getContentAsString();
         var response = mapper.readTree(json);
         var sum = java.math.BigDecimal.ZERO;

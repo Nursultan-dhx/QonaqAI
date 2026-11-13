@@ -158,7 +158,7 @@ export default function AssistantChat({
                               <div className="qchat-venue-photo">
                                 <img
                                   src={venue.imageUrl}
-                                  alt={`${venue.name} — ${venue.hall}`}
+                                  alt={`${venue.name} — фотография площадки`}
                                   loading="lazy"
                                 />
                                 <span>
@@ -172,7 +172,7 @@ export default function AssistantChat({
                                 <h3>{venue.name}</h3>
                                 <div className="qchat-venue-facts">
                                   <span>До {venue.capacity} гостей</span>
-                                  <span>{venue.area} м²</span>
+                                  <span>{venue.area == null ? "Площадь уточняется" : `${venue.area} м²`}</span>
                                 </div>
                                 <p className="qchat-venue-reason">{reason}</p>
                                 <p className="qchat-venue-price">

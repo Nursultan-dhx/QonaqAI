@@ -78,10 +78,10 @@ STANDARD и PREMIUM, дополнительные услуги и детализ
 
 - `frontend/` — React, Vite, оформление и взаимодействие пользователя.
 - `backend/` — Spring Boot, HTTP API, бизнес-логика и H2.
-- `backend/src/main/resources/catalog.json` — данные площадок; каталог можно расширять.
+- `backend/src/main/resources/catalog.json` — 50 площадок Астаны с адресами, вместимостью и источниками; неизвестная площадь и цена остаются `null`.
 - `backend/src/main/resources/static/images/` — локальные фотографии площадок.
 - `backend/data/` — файловая база H2. База, зависимости и результаты сборки не включаются в Git.
-- `docs/sources.md` — официальные источники характеристик и фотографий.
+- `docs/sources.md` — источники характеристик и фотографий: сайты площадок и карточки справочника ALA.
 - `docs/service-examples.json` — документальные примеры услуг; рабочие цены берутся только из backend service-rates.json, package-rates.json и отдельного demo-venue-rates.json.
 - `docs/testing.md` — сценарии и результаты проверки; `docs/architecture.md` — паттерны и диаграммы.
 

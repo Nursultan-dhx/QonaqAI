@@ -11,7 +11,8 @@ public class QualityStrategy implements VenueSelectionStrategy {
     @Override public List<Venue> rank(List<Venue> venues, int guests, BigDecimal budget) {
         // Objective space per guest is used, never invented ratings or reviews.
         return venues.stream().sorted(Comparator
-            .comparingDouble((Venue v) -> v.area()/Math.max(1,guests)).reversed()
+            .comparing((Venue v) -> v.area()==null ? null : v.area()/Math.max(1,guests),
+                Comparator.nullsLast(Comparator.reverseOrder()))
             .thenComparing(Venue::name)).toList();
     }
 }

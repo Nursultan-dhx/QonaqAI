@@ -3,6 +3,8 @@ package kz.qonaqai;
 import com.fasterxml.jackson.databind.*;
 import kz.qonaqai.domain.*;
 import kz.qonaqai.service.VenueService;
+import kz.qonaqai.persistence.CatalogSeeder;
+import org.springframework.core.io.ClassPathResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ class ApplicationIntegrationTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper mapper;
     @Autowired VenueService venues;
+    @Autowired CatalogSeeder seeder;
     private MockHttpSession demoSession;
 
     @BeforeEach
@@ -56,7 +59,7 @@ class ApplicationIntegrationTest {
     @Test void bootstrapIncludesVerifiedCatalogAndDemoUser() throws Exception {
         mvc.perform(get("/api/bootstrap").session(demoSession)).andExpect(status().isOk())
             .andExpect(jsonPath("$.profile.mode").value("DEMO"))
-            .andExpect(jsonPath("$.venues.length()").value(5));
+            .andExpect(jsonPath("$.venues.length()").value(50));
     }
     @Test void createReloadEditSelectAndDelete() throws Exception {
         var data=draft();var created=create(data);long id=created.path("event").path("id").asLong();
@@ -78,9 +81,10 @@ class ApplicationIntegrationTest {
     @Test void strategiesProduceDifferentOrdersWithoutInventingPrices() {
         var economical=venues.find("",80,StrategyId.ECONOMY,null);
         var spacious=venues.find("",80,StrategyId.QUALITY,null);
-        assertThat(economical).hasSize(5);
+        assertThat(economical).hasSize(50);
         assertThat(economical.getFirst().capacity()).isLessThanOrEqualTo(economical.getLast().capacity());
-        assertThat(spacious.getFirst().area()).isGreaterThanOrEqualTo(spacious.getLast().area());
+        assertThat(spacious).extracting(Venue::area)
+            .isSortedAccordingTo(Comparator.nullsLast(Comparator.reverseOrder()));
         assertThat(economical.getFirst().id()).isNotEqualTo(spacious.getFirst().id());
         assertThat(economical).allMatch(v->v.price()==null);
     }
@@ -88,6 +92,35 @@ class ApplicationIntegrationTest {
         assertThat(venues.find("",400,StrategyId.ECONOMY,BigDecimal.valueOf(1000)))
             .allMatch(v->v.capacity()>=400).isNotEmpty();
         assertThat(venues.find("",9999,StrategyId.QUALITY,null)).isEmpty();
+    }
+    @Test void expandedCatalogHasUniqueAstanaVenuesAndLocalPhotos() throws Exception {
+        var catalog=venues.find("",1,StrategyId.ECONOMY,null);
+        assertThat(catalog).hasSize(50);
+        var ids=new HashSet<Long>();
+        var slugs=new HashSet<String>();
+        for (var venue:catalog) {
+            var row=mapper.valueToTree(venue);
+            assertThat(ids.add(venue.id())).isTrue();
+            assertThat(slugs.add(row.path("slug").asText())).isTrue();
+            assertThat(venue.address()).startsWith("Астана, ").doesNotContain("Косшы","Акмол");
+            assertThat(row.path("sourceUrl").asText()).startsWith("https://");
+            assertThat(row.path("imageSourceUrl").asText()).startsWith("https://");
+            assertThat(new ClassPathResource("static"+row.path("imageUrl").asText()).exists()).isTrue();
+        }
+        assertThat(venues.find("Radisson",600,StrategyId.ECONOMY,null))
+            .extracting(Venue::id).containsExactly(6L);
+        assertThat(catalog).anyMatch(v->v.area()==null);
+    }
+    @Test void reseedingCatalogPreservesSavedEventsAndVenueReferences() throws Exception {
+        var data=draft();data.put("venueId",1L);
+        create(data);
+        var before=mvc.perform(get("/api/events").session(demoSession))
+            .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        seeder.run();
+        seeder.run();
+        assertThat(venues.find("",1,StrategyId.ECONOMY,null)).hasSize(50);
+        mvc.perform(get("/api/events").session(demoSession))
+            .andExpect(status().isOk()).andExpect(content().json(before));
     }
     @Test void searchIsCaseInsensitive() {
         assertThat(venues.find("RITZ",1,StrategyId.ECONOMY,null)).hasSize(1);

@@ -1,5 +1,5 @@
 {
-  "catalogVersion": "demo-venues-v1",
+  "catalogVersion": "demo-venues-v2",
   "rates": [
     {
       "venueId": 1,
@@ -35,6 +35,321 @@
       "currency": "KZT",
       "priceSource": "DEMO",
       "displayLabel": "Учебная аренда: Sheraton Astana Hotel"
+    },
+    {
+      "venueId": 6,
+      "price": 300000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Radisson Hotel, Astana"
+    },
+    {
+      "venueId": 7,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Hilton Garden Inn Astana"
+    },
+    {
+      "venueId": 8,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: KAZZHOL Astana"
+    },
+    {
+      "venueId": 9,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Мирас"
+    },
+    {
+      "venueId": 10,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Samruk 777"
+    },
+    {
+      "venueId": 11,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Esmeralda"
+    },
+    {
+      "venueId": 12,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Алғыс"
+    },
+    {
+      "venueId": 13,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Wyndham Garden Astana — Garden Hall"
+    },
+    {
+      "venueId": 14,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Royal Ballroom"
+    },
+    {
+      "venueId": 15,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: KorkemTau"
+    },
+    {
+      "venueId": 16,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Салтанат Сарайы"
+    },
+    {
+      "venueId": 17,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Традициональ"
+    },
+    {
+      "venueId": 18,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Жерұйық"
+    },
+    {
+      "venueId": 19,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Royal Palace"
+    },
+    {
+      "venueId": 20,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Palazzo Di Astana"
+    },
+    {
+      "venueId": 21,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Kobyz Palace"
+    },
+    {
+      "venueId": 22,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Grande Lusso"
+    },
+    {
+      "venueId": 23,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: AiSara Hall"
+    },
+    {
+      "venueId": 24,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Mereke Hall"
+    },
+    {
+      "venueId": 25,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Nur Hall"
+    },
+    {
+      "venueId": 26,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Bageta"
+    },
+    {
+      "venueId": 27,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: ААА Resto hall"
+    },
+    {
+      "venueId": 28,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Алтын Адам"
+    },
+    {
+      "venueId": 29,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Алтын Ұя"
+    },
+    {
+      "venueId": 30,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Байтерек Сарайы"
+    },
+    {
+      "venueId": 31,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Бақ Сарай"
+    },
+    {
+      "venueId": 32,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Гаухартас"
+    },
+    {
+      "venueId": 33,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Ғажайып"
+    },
+    {
+      "venueId": 34,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Жеті Қазына"
+    },
+    {
+      "venueId": 35,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Жетіген"
+    },
+    {
+      "venueId": 36,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Кыпшак"
+    },
+    {
+      "venueId": 37,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Мейрам"
+    },
+    {
+      "venueId": 38,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Мерей"
+    },
+    {
+      "venueId": 39,
+      "price": 100000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Меруерт"
+    },
+    {
+      "venueId": 40,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Тарлан"
+    },
+    {
+      "venueId": 41,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Томирис"
+    },
+    {
+      "venueId": 42,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Улытау"
+    },
+    {
+      "venueId": 43,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Ұлы дала"
+    },
+    {
+      "venueId": 44,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Хан Талапай"
+    },
+    {
+      "venueId": 45,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Farhi Hall"
+    },
+    {
+      "venueId": 46,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Sahil"
+    },
+    {
+      "venueId": 47,
+      "price": 150000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Portofino"
+    },
+    {
+      "venueId": 48,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Tasnim"
+    },
+    {
+      "venueId": 49,
+      "price": 200000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: Grand Hall Astana"
+    },
+    {
+      "venueId": 50,
+      "price": 250000,
+      "currency": "KZT",
+      "priceSource": "DEMO",
+      "displayLabel": "Учебная аренда: West Hall"
     }
   ]
 }
