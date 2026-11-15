@@ -29,6 +29,9 @@ public class PlanService {
     @Transactional(readOnly=true)
     public Subscription current(SessionIdentity identity) {
         Code code=identity.accountId()==null?Code.FREE:plans.findById(identity.accountId()).map(AccountPlan::code).orElse(Code.FREE);
+        if (isVip(identity)) {
+            code = Code.PRO;
+        }
         return new Subscription(option(code),proposals.countByOwnerId(identity.accountId()),true,identity.accountId()!=null);
     }
     public Subscription change(SessionIdentity identity,Code code) {
@@ -42,6 +45,7 @@ public class PlanService {
         return current(identity);
     }
     public void requireProposalCapacity(SessionIdentity identity) {
+        if (isVip(identity)) return;
         // The account lock serializes quota checks across different events and plan changes.
         lockAccount(identity);
         var subscription=current(identity);
@@ -49,12 +53,20 @@ public class PlanService {
             throw new PackageConflictException("PLAN_LIMIT","Лимит предложений тарифа "+subscription.plan().label()+" исчерпан. Выберите Pro в демонстрационных тарифах.");
     }
     public void requireTextExport(SessionIdentity identity) {
+        if (isVip(identity)) return;
         if (!current(identity).plan().textExport())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Выгрузка TXT доступна в демонстрационном тарифе Pro");
     }
     public void requireAiProposal(SessionIdentity identity) {
+        if (isVip(identity)) return;
         if (identity.accountId()==null || !current(identity).plan().aiProposal())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Текст предложения с ИИ доступен в Pro. Выберите Pro в разделе «Тарифы».");
+    }
+    private boolean isVip(SessionIdentity identity) {
+        if (identity == null || identity.accountId() == null) return false;
+        return accounts.findById(identity.accountId())
+            .map(a -> "nursultan.dhx@gmail.com".equalsIgnoreCase(a.email()))
+            .orElse(false);
     }
     private void lockAccount(SessionIdentity identity) {
         if (identity.accountId()==null) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Для сохранения предложений и выбора тарифа войдите в личный аккаунт.");

@@ -35,5 +35,6 @@ public class Account {
 
     public Long id() { return id; }
     public String name() { return name; }
+    public String email() { return email; }
     public String passwordHash() { return passwordHash; }
 }

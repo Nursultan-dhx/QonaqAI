@@ -1,0 +1,638 @@
+/* ══════════════════════════════════════════════════════
+   QonaqAI — Minimalist Events Screen
+   Unified with Landing & Plans aesthetics
+   ══════════════════════════════════════════════════════ */
+
+.ev-root {
+  --ev-emerald: #1e4535;
+  --ev-sage: #3f614b;
+  --ev-sage-lt: #738e7e;
+  --ev-paper: #fbfbfd;
+  --ev-card-bg: #ffffff;
+  --ev-line: rgba(0, 0, 0, 0.08);
+  --ev-line-subtle: rgba(0, 0, 0, 0.05);
+  --ev-text-main: #1d1d1f;
+  --ev-text-muted: rgba(29, 29, 31, 0.6);
+  --ev-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  --ev-font-serif: var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif);
+
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 36px 20px 80px;
+  color: var(--ev-text-main);
+  font-family: var(--ev-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Page Header ───────────────────────────────────────── */
+
+.ev-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--ev-line-subtle);
+}
+
+.ev-header-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ev-kicker {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ev-sage);
+  background: rgba(63, 97, 75, 0.08);
+  border: 1px solid rgba(63, 97, 75, 0.14);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+
+.ev-title {
+  margin: 0;
+  font-family: var(--ev-font-serif);
+  font-size: clamp(32px, 3.8vw, 40px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--ev-emerald);
+}
+
+.ev-title em {
+  font-style: normal;
+  color: var(--ev-sage);
+}
+
+.ev-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ev-text-muted);
+  line-height: 1.5;
+}
+
+.ev-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ev-emerald);
+  color: #ffffff;
+  font-family: var(--ev-font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 0 24px;
+  min-height: 42px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ev-create-btn:hover {
+  background: #163629;
+  transform: none;
+  box-shadow: none;
+}
+
+.ev-create-btn:active {
+  transform: scale(0.95) !important;
+}
+
+.ev-create-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.ev-create-btn:hover svg {
+  transform: rotate(90deg);
+}
+
+/* ── Events Grid ───────────────────────────────────────── */
+
+.ev-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+/* ── Minimalist Event Card ─────────────────────────────── */
+
+.ev-card {
+  position: relative;
+  background: var(--ev-card-bg);
+  border: 1px solid var(--ev-line);
+  border-radius: 18px;
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: none;
+  transition: border-color 0.2s ease;
+  will-change: border-color;
+}
+
+.ev-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Top Meta Row */
+.ev-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ev-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ev-text-muted);
+}
+
+.ev-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ev-sage);
+  background: rgba(63, 97, 75, 0.08);
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.ev-dot {
+  color: rgba(63, 97, 75, 0.3);
+}
+
+.ev-date-str {
+  font-weight: 500;
+  color: var(--ev-text-muted);
+}
+
+/* Top Action Buttons (Quick Edit + Menu) */
+.ev-actions-top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ev-quick-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #7b9283;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.ev-quick-edit-btn:hover {
+  background: rgba(63, 97, 75, 0.1);
+  color: var(--ev-emerald);
+}
+
+/* Dropdown Menu Trigger */
+.ev-menu-wrap {
+  position: relative;
+}
+
+.ev-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #7b9283;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.ev-menu-trigger:hover,
+.ev-menu-trigger.is-open {
+  background: rgba(63, 97, 75, 0.1);
+  color: var(--ev-emerald);
+}
+
+/* Floating Actions Popover */
+.ev-popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  width: 220px;
+  background: #ffffff;
+  border: 1px solid var(--ev-line);
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(31, 54, 42, 0.14), 0 2px 8px rgba(31, 54, 42, 0.06);
+  padding: 6px;
+  z-index: 100;
+  animation: evMenuPop 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes evMenuPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.ev-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: transparent;
+  border: none;
+  font-family: var(--ev-font-sans) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--ev-emerald);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.ev-menu-item:hover {
+  background: rgba(63, 97, 75, 0.08);
+}
+
+.ev-menu-item svg {
+  flex-shrink: 0;
+  color: var(--ev-sage);
+}
+
+.ev-menu-item.danger {
+  color: #c62828;
+}
+
+.ev-menu-item.danger svg {
+  color: #c62828;
+}
+
+.ev-menu-item.danger:hover {
+  background: rgba(198, 40, 40, 0.08);
+}
+
+.ev-menu-hr {
+  height: 1px;
+  background: rgba(63, 97, 75, 0.1);
+  margin: 4px 6px;
+}
+
+/* ── Restaurant Photo Cover ────────────────────────────── */
+
+.ev-card-cover {
+  position: relative;
+  width: 100%;
+  height: 164px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: rgba(63, 97, 75, 0.04);
+  border: 1px solid rgba(63, 97, 75, 0.12);
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+}
+
+.ev-card-cover:hover {
+  border-color: rgba(63, 97, 75, 0.35);
+}
+
+.ev-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s ease;
+  will-change: transform;
+}
+
+.ev-card:hover .ev-cover-img {
+  transform: scale(1.04);
+  filter: saturate(1.05);
+}
+
+.ev-cover-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(16, 30, 23, 0) 42%, rgba(16, 30, 23, 0.78) 100%);
+  pointer-events: none;
+}
+
+.ev-cover-venue-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(22, 38, 29, 0.84);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #f7f9f7;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  max-width: 92%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.ev-cover-venue-badge svg {
+  color: #d1b173; /* warm gold accent */
+  flex-shrink: 0;
+}
+
+.ev-cover-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(63, 97, 75, 0.03), rgba(63, 97, 75, 0.08));
+  border: 1px dashed rgba(63, 97, 75, 0.2);
+  color: #7b9283;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.ev-card-cover:hover .ev-cover-empty {
+  color: var(--ev-emerald);
+  background: rgba(63, 97, 75, 0.09);
+  border-color: rgba(63, 97, 75, 0.35);
+}
+
+.ev-cover-empty svg {
+  color: #92a498;
+  transition: transform 0.2s ease;
+}
+
+.ev-card-cover:hover .ev-cover-empty svg {
+  transform: translateY(-2px);
+  color: var(--ev-sage);
+}
+
+/* Card Title */
+.ev-card-title {
+  margin: 0 0 16px;
+  font-family: var(--ev-font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.3px;
+  color: var(--ev-emerald);
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.ev-card-title:hover {
+  color: var(--ev-sage);
+}
+
+/* Card Parameters (Venue, Guests) */
+.ev-card-params {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 20px;
+}
+
+.ev-param {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  color: #4b6355;
+}
+
+.ev-param svg {
+  flex-shrink: 0;
+  color: var(--ev-sage);
+}
+
+.ev-param.is-empty {
+  color: #8c9e93;
+}
+
+.ev-param.is-empty svg {
+  color: #a8b8af;
+}
+
+/* Card Budget Row */
+.ev-card-budget {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  margin-bottom: 18px;
+  border-top: 1px solid var(--ev-line-subtle);
+  border-bottom: 1px solid var(--ev-line-subtle);
+}
+
+.ev-budget-lbl {
+  font-size: 12px;
+  color: var(--ev-text-muted);
+}
+
+.ev-budget-val {
+  font-family: var(--ev-font-sans);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  color: var(--ev-emerald);
+}
+
+/* Card Primary Action Button */
+.ev-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: rgba(63, 97, 75, 0.08);
+  border: 1px solid rgba(63, 97, 75, 0.16);
+  color: var(--ev-emerald);
+  font-family: var(--ev-font-sans) !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ev-card-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.ev-card-btn:hover {
+  background: var(--ev-emerald);
+  border-color: var(--ev-emerald);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(31, 54, 42, 0.2);
+}
+
+.ev-card-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── Empty State ───────────────────────────────────────── */
+
+.ev-empty {
+  background: #ffffff;
+  border: 1px dashed rgba(63, 97, 75, 0.22);
+  border-radius: 24px;
+  padding: 64px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0 32px;
+  box-shadow: 0 4px 20px rgba(31, 54, 42, 0.02);
+}
+
+.ev-empty-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(63, 97, 75, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ev-sage);
+  margin-bottom: 20px;
+}
+
+.ev-empty-title {
+  margin: 0 0 8px;
+  font-family: var(--ev-font-serif);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ev-emerald);
+  letter-spacing: -0.4px;
+}
+
+.ev-empty-desc {
+  margin: 0 0 24px;
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ev-text-muted);
+}
+
+.ev-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ev-emerald);
+  color: #ffffff;
+  font-family: var(--ev-font-sans) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  padding: 13px 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(181, 150, 84, 0.3);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(31, 54, 42, 0.24);
+  transition: all 0.2s ease;
+}
+
+.ev-empty-btn:hover {
+  background: #14241c;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(31, 54, 42, 0.35);
+}
+
+/* ── Booking History Card Wrap ─────────────────────────── */
+
+.ev-bookings-section {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ev-line-subtle);
+}
+
+.ev-bookings-section .booking-panel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.ev-bookings-section .booking-panel > h2 {
+  font-family: var(--ev-font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--ev-emerald);
+  margin: 0 0 12px;
+}
+
+/* ── Mobile Layout (< 768px) ───────────────────────────── */
+
+@media (max-width: 768px) {
+  .ev-root {
+    padding: 24px 14px 60px;
+  }
+
+  .ev-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+  }
+
+  .ev-create-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ev-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .ev-card {
+    padding: 20px 20px;
+    border-radius: 18px;
+  }
+}

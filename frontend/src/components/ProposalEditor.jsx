@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ProposalPrintModal from "./ProposalPrintModal.jsx";
 import "./proposal.css";
 
 export const proposalStatus = {
@@ -21,6 +22,7 @@ export default function ProposalEditor({
   const [saving, setSaving] = useState(false);
   const [aiBusy, setAiBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showPrint, setShowPrint] = useState(false);
   const [reload, setReload] = useState(0);
   const active = useRef(null);
 
@@ -197,16 +199,39 @@ export default function ProposalEditor({
             Редактирование текста не меняет смету или бронь. При изменении
             исходных данных подготовьте новое предложение.
           </p>
-          <button
-            className="button primary"
-            disabled={saving || aiBusy || !title.trim() || !body.trim()}
-          >
-            {saving ? "Сохраняем…" : "Сохранить предложение"}
-          </button>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+            <button
+              className="button primary"
+              disabled={saving || aiBusy || !title.trim() || !body.trim()}
+            >
+              {saving ? "Сохраняем…" : "Сохранить предложение"}
+            </button>
+            <button
+              type="button"
+              className="button secondary"
+              disabled={!title.trim() || !body.trim()}
+              onClick={() => setShowPrint(true)}
+              title="Печать или сохранение в PDF"
+            >
+              🖨️ Печать / PDF
+            </button>
+          </div>
           {saved && (
             <p role="status">Предложение сохранено в личном кабинете.</p>
           )}
         </form>
+      )}
+      {showPrint && (
+        <ProposalPrintModal
+          proposal={{
+            id: record?.id,
+            eventId: target.eventId || record?.eventId,
+            title,
+            body,
+            createdAt: record?.createdAt,
+          }}
+          onClose={() => setShowPrint(false)}
+        />
       )}
     </div>
   );

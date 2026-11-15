@@ -6,11 +6,11 @@
   --entry-muted: #506457;
   --entry-line: #dce2d6;
   --entry-wash: #edf1e9;
-  --entry-serif: "Times New Roman", Georgia, serif;
+  --entry-serif: var(--font-display, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif);
   min-height: 100dvh;
   background: var(--entry-paper);
   color: var(--entry-ink);
-  font: 16px/1.5 var(--entry-serif);
+  font: 16px/1.5 var(--font-text, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
 }
 
 .qentry :is(h1, h2, h3, button, input, summary) {

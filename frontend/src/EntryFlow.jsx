@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./entry.css";
+import LandingScreen from "./components/LandingScreen";
 
 const venues = [
   {
@@ -7,14 +8,14 @@ const venues = [
     name: "The St. Regis Astana",
     hall: "Astor Ballroom",
     capacity: 240,
-    image: "/images/st-regis-astana.jpg",
+    image: "https://iili.io/oHej2z7.jpg",
   },
   {
     id: "hilton",
     name: "Hilton Astana",
     hall: "Grand Ballroom",
     capacity: 350,
-    image: "/images/hilton-astana.jpg",
+    image: "https://iili.io/oHeXb9V.jpg",
   },
 ];
 
@@ -218,7 +219,7 @@ export default function EntryFlow({
   initialScreen = "demo",
 }) {
   const [screen, setScreen] = useState(
-    initialScreen === "auth" ? "auth" : "demo",
+    initialScreen === "auth" ? "auth" : "landing",
   );
   const [mode, setMode] = useState(
     initialScreen === "auth" ? "login" : "register",
@@ -333,6 +334,35 @@ export default function EntryFlow({
       {screen === "demo" ? (
         <main className="qentry-demo">
           <section className="qentry-demo-copy">
+            <div
+              className="qentry-brand"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "20px",
+              }}
+            >
+              <img
+                src="/qonaq-icon.png"
+                alt="QonaqAI"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  objectFit: "contain",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "24px",
+                  fontWeight: 800,
+                  fontFamily: '"Times New Roman", Georgia, serif',
+                  letterSpacing: "-1px",
+                }}
+              >
+                Qonaq<span style={{ color: "#859b84" }}>AI</span>
+              </span>
+            </div>
             <div className="qentry-demo-label">
               <EntryIcon name="spark" /> Демо возможностей ИИ
             </div>
@@ -417,182 +447,14 @@ export default function EntryFlow({
           </section>
         </main>
       ) : (
-        <main className="qentry-auth">
-          <section
-            className="qentry-auth-story"
-            aria-labelledby="qentry-auth-story-title"
-          >
-            <div className="qentry-auth-story-photo">
-              <img
-                src={venues[0].image}
-                alt="Astor Ballroom, The St. Regis Astana"
-              />
-            </div>
-            <div className="qentry-auth-story-content">
-              <h2 id="qentry-auth-story-title">
-                Около 70 минут
-                <br />
-                экономии в этом примере
-              </h2>
-              <TimeComparison />
-            </div>
-          </section>
-          <section
-            className="qentry-auth-panel"
-            aria-labelledby="qentry-auth-title"
-          >
-            <div className="qentry-auth-form-wrap">
-              <div
-                className="qentry-auth-modes"
-                aria-label="Вход или регистрация"
-              >
-                <button
-                  type="button"
-                  disabled={!!pending}
-                  aria-pressed={register}
-                  onClick={() => openAuth("register")}
-                >
-                  Регистрация
-                </button>
-                <button
-                  type="button"
-                  disabled={!!pending}
-                  aria-pressed={!register}
-                  onClick={() => openAuth("login")}
-                >
-                  Вход
-                </button>
-              </div>
-              <h1 id="qentry-auth-title" tabIndex="-1" ref={heading}>
-                {register ? "Создать аккаунт" : "Войти в QonaqAI"}
-              </h1>
-              <form
-                className="qentry-form"
-                onSubmit={submit}
-                noValidate
-                aria-busy={!!pending}
-              >
-                {register && (
-                  <div className="qentry-field">
-                    <label htmlFor="qentry-name">Имя</label>
-                    <input
-                      id="qentry-name"
-                      name="name"
-                      autoComplete="name"
-                      maxLength={80}
-                      required
-                      value={fields.name}
-                      disabled={!!pending}
-                      onChange={updateField}
-                      aria-invalid={!!errors.name}
-                      aria-describedby={
-                        errors.name ? "qentry-error-name" : undefined
-                      }
-                    />
-                    {fieldFeedback("name")}
-                  </div>
-                )}
-                <div className="qentry-field">
-                  <label htmlFor="qentry-email">Почта</label>
-                  <input
-                    id="qentry-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    maxLength={254}
-                    required
-                    value={fields.email}
-                    disabled={!!pending}
-                    onChange={updateField}
-                    aria-invalid={!!errors.email}
-                    aria-describedby={
-                      errors.email ? "qentry-error-email" : undefined
-                    }
-                  />
-                  {fieldFeedback("email")}
-                </div>
-                <label className="qentry-field" htmlFor="qentry-password">
-                  Пароль
-                </label>
-                <div className="qentry-password">
-                  <input
-                    id="qentry-password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete={
-                      register ? "new-password" : "current-password"
-                    }
-                    required
-                    minLength={register ? 10 : undefined}
-                    maxLength={128}
-                    value={fields.password}
-                    disabled={!!pending}
-                    onChange={updateField}
-                    aria-invalid={!!errors.password}
-                    aria-describedby={
-                      errors.password
-                        ? "qentry-error-password"
-                        : register
-                          ? "qentry-password-hint"
-                          : undefined
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="qentry-text"
-                    disabled={!!pending}
-                    onClick={() => setShowPassword((current) => !current)}
-                    aria-pressed={showPassword}
-                  >
-                    {showPassword ? "Скрыть" : "Показать"}
-                  </button>
-                </div>
-                {errors.password
-                  ? fieldFeedback("password")
-                  : register && (
-                      <span className="qentry-hint" id="qentry-password-hint">
-                        Минимум 10 символов
-                      </span>
-                    )}
-                {serverError && (
-                  <p className="qentry-server-error" role="alert">
-                    {serverError}
-                  </p>
-                )}
-                <button
-                  className="qentry-primary qentry-submit"
-                  type="submit"
-                  disabled={!!pending}
-                >
-                  {pending === "account"
-                    ? "Подождите…"
-                    : register
-                      ? "Зарегистрироваться"
-                      : "Войти"}{" "}
-                  <EntryIcon name="arrow" />
-                </button>
-              </form>
-              <button
-                className="qentry-text qentry-guest"
-                type="button"
-                disabled={!!pending}
-                onClick={enterDemoProfile}
-              >
-                {pending === "demo"
-                  ? "Открываем каталог…"
-                  : "Открыть общий демо-профиль"}
-              </button>
-              <button
-                className="qentry-text qentry-return"
-                type="button"
-                disabled={!!pending}
-                onClick={replayDemo}
-              >
-                <EntryIcon name="back" /> К демонстрации
-              </button>
-            </div>
-          </section>
-        </main>
+        <LandingScreen
+          onGetStarted={() => openAuth("register")}
+          onLogin={onLogin}
+          onRegister={onRegister}
+          onDemo={enterDemoProfile}
+          initialAuthActive={initialScreen === "auth" || screen === "auth"}
+          initialAuthMode={mode}
+        />
       )}
     </div>
   );

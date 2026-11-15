@@ -1,6 +1,9 @@
 .tools/
 backend/target/
-backend/data/
+data/
+**/data/
+*.mv.db
+*.trace.db
 frontend/node_modules/
 frontend/dist/
 backend/src/main/resources/static/assets/

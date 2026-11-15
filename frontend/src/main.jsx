@@ -7,6 +7,9 @@ import PackageConfigurator from "./components/PackageConfigurator.jsx";
 import AssistantChat from "./components/AssistantChat.jsx";
 import ProposalEditor from "./components/ProposalEditor.jsx";
 import AccountArea from "./components/AccountArea.jsx";
+import EventsScreen from "./components/EventsScreen.jsx";
+import EventEstimateDetail from "./components/EventEstimateDetail.jsx";
+import Icon2Gis from "./components/Icon2Gis.jsx";
 const paths = {
   arrow: "M5 12h14m-6-6 6 6-6 6",
   pin: "M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
@@ -29,6 +32,7 @@ const paths = {
   chevron: "m6 9 6 6 6-6",
   info: "M12 11v6m0-10v1M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z",
   logout: "M10 17l5-5-5-5m5 5H3m12-8h5v16h-5",
+  sliders: "M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6m2-6h6m2 8h6",
 };
 function Icon({ name, size = 20 }) {
   return (
@@ -71,6 +75,31 @@ const emptyForm = () => ({
   strategy: "ECONOMY",
   venueId: null,
 });
+
+export function getVenueDistrict(address = "") {
+  if (
+    /Туран|Достык|Кабанбай|Алиева|Кунаева|Сыганак|Талал|Мангилик|Керей|Мухамедханов|Айтматов|Е-489|Коргалжын|Кургальжинское/i.test(
+      address,
+    )
+  ) {
+    return "YESIL";
+  }
+  if (
+    /Момышулы|Майлин|Балкантау|Жумабаев|Жургенов|Жанкент|Нажимеденов|Абылай хана|Сатпаев|Кажымукан/i.test(
+      address,
+    )
+  ) {
+    return "ALMATY";
+  }
+  return "SARYARKA";
+}
+
+export const DISTRICTS = [
+  { id: "ALL", label: "Все районы" },
+  { id: "YESIL", label: "Есиль / Левый берег" },
+  { id: "ALMATY", label: "Алматы / Байконур" },
+  { id: "SARYARKA", label: "Сарыарка (Центр)" },
+];
 async function api(path, options = {}) {
   const response = await fetch(path, {
     ...options,
@@ -213,8 +242,8 @@ function App() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }
 
-  async function bootstrap(screen = "demo") {
-    setView({ page: "loading" });
+  async function bootstrap(screen = "demo", silent = false) {
+    if (!silent) setView({ page: "loading" });
     try {
       const data = await api("/api/bootstrap");
       setView({ page: "planner", data });
@@ -230,7 +259,7 @@ function App() {
 
   async function enter(action, values) {
     await authRequest(action, values);
-    await bootstrap("auth");
+    await bootstrap("auth", true);
   }
 
   if (view.page === "entry") {
@@ -261,6 +290,11 @@ function App() {
     return (
       <div className="page-loading" role="status">
         <div className="brand">
+          <img
+            src="/qonaq-icon.png"
+            alt="QonaqAI"
+            className="brand-logo"
+          />
           Qonaq<span>AI</span>
         </div>
         <div className="spinner" />
@@ -269,25 +303,32 @@ function App() {
     );
   }
   return (
-    <Planner
-      initialData={view.data}
-      onSessionExpired={() => showEntry()}
-      onLogout={async () => {
-        await authRequest("logout");
-        showEntry();
-      }}
-    />
+    <div className="ql-app-enter-wrap">
+      <Planner
+        initialData={view.data}
+        onSessionExpired={() => showEntry()}
+        onLogout={async () => {
+          await authRequest("logout");
+          showEntry();
+        }}
+      />
+    </div>
   );
 }
 
 function Planner({ initialData, onSessionExpired, onLogout }) {
   const [data, setData] = useState(initialData),
-    [tab, setTab] = useState("catalog"),
+    [tab, setTab] = useState("planning"),
     [form, setForm] = useState(emptyForm),
     [editingId, setEditingId] = useState(null),
     [fieldErrors, setFieldErrors] = useState({}),
     [saving, setSaving] = useState(false),
     [query, setQuery] = useState(""),
+    [district, setDistrict] = useState("ALL"),
+    [capacityRange, setCapacityRange] = useState("ALL"),
+    [selectedFeatures, setSelectedFeatures] = useState([]),
+    [priceFilter, setPriceFilter] = useState("ALL"),
+    [sortBy, setSortBy] = useState("DEFAULT"),
     [venues, setVenues] = useState(initialData.venues),
     [catalogLoading, setCatalogLoading] = useState(false),
     [catalogError, setCatalogError] = useState(""),
@@ -424,6 +465,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     setShowCompare(false);
     const event = await saveEvent(null, v.id);
     if (event) {
+      setTab("planning");
       setAssistantStage("estimate");
       setServiceEvent(event);
     }
@@ -447,7 +489,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     setAssistantStage("brief");
     setEditingId(null);
     setFieldErrors({});
-    setTab("catalog");
+    setTab("planning");
     setTimeout(() => formRef.current?.querySelector("input")?.focus(), 100);
   }
   function editEvent(event) {
@@ -455,28 +497,109 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
     setEditingId(event.id);
     setFieldErrors({});
     setAssistantStage("parameters");
-    setTab("catalog");
+    setTab("planning");
     setTimeout(
       () =>
         formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
       100,
     );
   }
-  function applyAssistant(result) {
-    setForm({
-      ...emptyForm(),
-      date: "",
-      guests: "",
-      budget: "",
-      ...result.fields,
-      title: result.fields.title || "Моё мероприятие",
-      description: result.description,
-      venueId: result.venueId || null,
-    });
-    setAssistantNotes(result);
+  function handleEventUpdated(updatedEvent, notifications) {
+    setData((prev) => ({
+      ...prev,
+      events: prev.events.map((ev) =>
+        ev.id === updatedEvent.id ? updatedEvent : ev,
+      ),
+      notifications: notifications || prev.notifications,
+    }));
+    notify("✓ Мероприятие успешно обновлено");
+  }
+  async function applyAssistant(result) {
+    const fields = result.fields || {};
+    const venueId = result.venueId || null;
+    const targetVenue = allVenues.find((v) => v.id === venueId);
+
+    const guests =
+      Number(fields.guests) && Number(fields.guests) >= 1
+        ? Number(fields.guests)
+        : targetVenue
+          ? Math.min(80, targetVenue.capacity)
+          : 80;
+
+    const budget =
+      Number(fields.budget) && Number(fields.budget) > 0
+        ? Number(fields.budget)
+        : 2000000;
+
+    const date =
+      fields.date && fields.date >= localDay()
+        ? fields.date
+        : localDay(14);
+
+    const type = fields.type || "CORPORATE";
+    const typeLabel =
+      data.eventTypes.find((t) => t.id === type)?.label || "Событие";
+    const title =
+      fields.title?.trim() ||
+      (targetVenue
+        ? `${typeLabel} в ${targetVenue.name}`
+        : `${typeLabel} в Астане`);
+
+    const description = result.description || "";
+    const strategy = fields.strategy || "ECONOMY";
+
+    const eventPayload = {
+      title,
+      type,
+      date,
+      guests,
+      budget,
+      strategy,
+      description,
+      venueId,
+    };
+
+    setForm(eventPayload);
     setFieldErrors({});
-    setAssistantStage("parameters");
-    setTimeout(() => formRef.current?.querySelector("input")?.focus(), 260);
+    setAssistantNotes(result);
+
+    if (venueId) {
+      // Прямой бесшовный переход к Смете и Предложению (Zero-Friction)
+      setSaving(true);
+      try {
+        const res = await api(
+          editingId ? `/api/events/${editingId}` : "/api/events",
+          {
+            method: editingId ? "PUT" : "POST",
+            body: JSON.stringify(eventPayload),
+          },
+        );
+        setEditingId(res.event.id);
+        setForm({ ...res.event, description: res.event.description || "" });
+        setData((prev) => ({
+          ...prev,
+          events: [
+            res.event,
+            ...prev.events.filter((x) => x.id !== res.event.id),
+          ],
+          notifications: res.notifications || prev.notifications,
+        }));
+        setServiceEvent(res.event);
+        setAssistantStage("estimate");
+        notify("✓ Мероприятие создано. Смета и предложение готовы!");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      } catch (err) {
+        if (err.status === 401) onSessionExpired();
+        else notify(err.message, true);
+      } finally {
+        setSaving(false);
+      }
+    }
+
+    // Если площадка ещё не выбрана:
+    setAssistantStage("venues");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function startManualEntry() {
     setAssistantStage("parameters");
@@ -521,6 +644,455 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
   const allVenues = data.venues || [],
     selectedVenue = allVenues.find((v) => v.id === form.venueId),
     comparison = allVenues.filter((v) => compare.includes(v.id));
+
+  function toggleFeature(feat) {
+    setSelectedFeatures((prev) =>
+      prev.includes(feat) ? prev.filter((f) => f !== feat) : [...prev, feat],
+    );
+  }
+
+  function resetAllFilters() {
+    setQuery("");
+    setDistrict("ALL");
+    setCapacityRange("ALL");
+    setSelectedFeatures([]);
+    setPriceFilter("ALL");
+    setSortBy("DEFAULT");
+    field("guests", 80);
+    field("strategy", "ECONOMY");
+  }
+
+  const hasActiveFilters =
+    district !== "ALL" ||
+    capacityRange !== "ALL" ||
+    selectedFeatures.length > 0 ||
+    priceFilter !== "ALL" ||
+    query.trim() !== "" ||
+    sortBy !== "DEFAULT";
+
+  const activeFiltersCount =
+    (district !== "ALL" ? 1 : 0) +
+    (capacityRange !== "ALL" ? 1 : 0) +
+    selectedFeatures.length +
+    (priceFilter !== "ALL" ? 1 : 0) +
+    (query.trim() !== "" ? 1 : 0) +
+    (sortBy !== "DEFAULT" ? 1 : 0);
+
+  // 1. Filter by District
+  let filteredVenues =
+    district === "ALL"
+      ? venues
+      : venues.filter((v) => getVenueDistrict(v.address) === district);
+
+  // 2. Filter by Capacity Range
+  if (capacityRange === "UNDER_200") {
+    filteredVenues = filteredVenues.filter((v) => (v.capacity || 0) <= 200);
+  } else if (capacityRange === "200_350") {
+    filteredVenues = filteredVenues.filter(
+      (v) => (v.capacity || 0) > 200 && (v.capacity || 0) <= 350,
+    );
+  } else if (capacityRange === "350_500") {
+    filteredVenues = filteredVenues.filter(
+      (v) => (v.capacity || 0) > 350 && (v.capacity || 0) <= 500,
+    );
+  } else if (capacityRange === "OVER_500") {
+    filteredVenues = filteredVenues.filter((v) => (v.capacity || 0) > 500);
+  }
+
+  // 3. Filter by Features
+  if (selectedFeatures.length > 0) {
+    filteredVenues = filteredVenues.filter((v) => {
+      const vFeatures = v.features || [];
+      return selectedFeatures.every((f) => {
+        if (f === "Конференция") {
+          return vFeatures.some((vf) =>
+            /конференц|мультимедиа|led|проектор/i.test(vf),
+          );
+        }
+        return vFeatures.some((vf) =>
+          vf.toLowerCase().includes(f.toLowerCase()),
+        );
+      });
+    });
+  }
+
+  // 4. Filter by Price
+  if (priceFilter === "HAS_PRICE") {
+    filteredVenues = filteredVenues.filter((v) => v.price != null && v.price > 0);
+  } else if (priceFilter === "ON_REQUEST") {
+    filteredVenues = filteredVenues.filter((v) => v.price == null || v.price === 0);
+  }
+
+  // 5. Sort
+  let displayedVenues = [...filteredVenues];
+  if (sortBy === "CAPACITY_DESC") {
+    displayedVenues.sort((a, b) => (b.capacity || 0) - (a.capacity || 0));
+  } else if (sortBy === "CAPACITY_ASC") {
+    displayedVenues.sort((a, b) => (a.capacity || 0) - (b.capacity || 0));
+  } else if (sortBy === "AREA_DESC") {
+    displayedVenues.sort((a, b) => (b.area || 0) - (a.area || 0));
+  } else if (sortBy === "NAME_ASC") {
+    displayedVenues.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+  }
+
+  function renderCatalogContent() {
+    return (
+      <div className="catalog">
+        {/* ── 1. Search & Sort & Strategy ── */}
+        <div className="catalog-toolbar">
+          <div className="search-input">
+            <Icon name="search" size={18} />
+            <input
+              aria-label="Поиск площадок"
+              placeholder="Название площадки или адрес..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {query && (
+              <button
+                className="icon-button"
+                aria-label="Очистить поиск"
+                onClick={() => setQuery("")}
+              >
+                <Icon name="close" size={15} />
+              </button>
+            )}
+          </div>
+          <div className="catalog-sort-select-wrap">
+            <label htmlFor="catalog-sort" className="catalog-sort-label">
+              <Icon name="sliders" size={15} />
+              <span>Сортировка:</span>
+            </label>
+            <select
+              id="catalog-sort"
+              className="catalog-sort-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="DEFAULT">По умолчанию</option>
+              <option value="CAPACITY_DESC">Вместимость: от больших к малым</option>
+              <option value="CAPACITY_ASC">Вместимость: от малых к большим</option>
+              <option value="AREA_DESC">Площадь зала (м²)</option>
+              <option value="NAME_ASC">По названию (А–Я)</option>
+            </select>
+          </div>
+          <div
+            className="strategy-switch"
+            aria-label="Способ подбора"
+          >
+            {data.strategies.map((s) => (
+              <button
+                key={s.id}
+                className={form.strategy === s.id ? "active" : ""}
+                onClick={() => field("strategy", s.id)}
+                title={s.description}
+              >
+                <Icon
+                  name={s.id === "ECONOMY" ? "leaf" : "square"}
+                  size={15}
+                />
+                {s.id === "ECONOMY" ? "Экономный" : "Просторнее"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── 2. Filters Box ── */}
+        <div className="catalog-filters-box">
+          {/* Район */}
+          <div className="catalog-filter-row">
+            <span className="catalog-filter-label">Район:</span>
+            <div className="catalog-pills-list" role="tablist" aria-label="Районы Астаны">
+              {DISTRICTS.map((d) => {
+                const count =
+                  d.id === "ALL"
+                    ? venues.length
+                    : venues.filter(
+                        (v) => getVenueDistrict(v.address) === d.id,
+                      ).length;
+                return (
+                  <button
+                    key={d.id}
+                    type="button"
+                    className={`catalog-pill ${district === d.id ? "active" : ""}`}
+                    onClick={() => setDistrict(d.id)}
+                    role="tab"
+                    aria-selected={district === d.id}
+                  >
+                    <span>{d.label}</span>
+                    <span className="pill-count">({count})</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Вместимость */}
+          <div className="catalog-filter-row">
+            <span className="catalog-filter-label">Вместимость:</span>
+            <div className="catalog-pills-list" role="toolbar" aria-label="Вместимость залов">
+              {[
+                { id: "ALL", label: "Любая вместимость" },
+                { id: "UNDER_200", label: "До 200 гостей" },
+                { id: "200_350", label: "200 – 350 гостей" },
+                { id: "350_500", label: "350 – 500 гостей" },
+                { id: "OVER_500", label: "500+ гостей" },
+              ].map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className={`catalog-pill ${capacityRange === c.id ? "active" : ""}`}
+                  onClick={() => setCapacityRange(c.id)}
+                >
+                  <span>{c.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Оснащение */}
+          <div className="catalog-filter-row">
+            <span className="catalog-filter-label">Оснащение:</span>
+            <div className="catalog-pills-list" role="toolbar" aria-label="Оснащение и особенности">
+              {[
+                { id: "Парковка", label: "Парковка", icon: "🚗" },
+                { id: "Сцена", label: "Сцена", icon: "🎭" },
+                { id: "VIP-зал", label: "VIP-зал", icon: "👑" },
+                { id: "Комната невесты", label: "Комната невесты", icon: "👰" },
+                { id: "Конференция", label: "Конференц-зал / LED", icon: "📽️" },
+              ].map((f) => {
+                const active = selectedFeatures.includes(f.id);
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`catalog-pill ${active ? "active" : ""}`}
+                    onClick={() => toggleFeature(f.id)}
+                    aria-pressed={active}
+                  >
+                    <span>{f.icon} {f.label}</span>
+                    {active && <span className="pill-check">✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Стоимость */}
+          <div className="catalog-filter-row">
+            <span className="catalog-filter-label">Цена:</span>
+            <div className="catalog-pills-list" role="toolbar" aria-label="Фильтр по стоимости">
+              {[
+                { id: "ALL", label: "Все площадки" },
+                { id: "HAS_PRICE", label: "С опубликованной ценой" },
+                { id: "ON_REQUEST", label: "Цена по запросу" },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`catalog-pill ${priceFilter === p.id ? "active" : ""}`}
+                  onClick={() => setPriceFilter(p.id)}
+                >
+                  <span>{p.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── 3. Results Bar & Reset Button ── */}
+        <div className="catalog-active-bar">
+          <div className="catalog-results-badge">
+            Найдено площадок: <strong>{displayedVenues.length}</strong>
+            {district !== "ALL" && (
+              <span className="results-subtag">
+                ({DISTRICTS.find((d) => d.id === district)?.label})
+              </span>
+            )}
+          </div>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              className="catalog-reset-filters-btn"
+              onClick={resetAllFilters}
+            >
+              <Icon name="close" size={13} />
+              <span>Сбросить все фильтры ({activeFiltersCount})</span>
+            </button>
+          )}
+        </div>
+        {catalogError ? (
+          <div className="catalog-empty">
+            <Icon name="info" size={30} />
+            <h3>Не удалось обновить подбор</h3>
+            <p>{catalogError}</p>
+            <button
+              className="button secondary"
+              onClick={() =>
+                field(
+                  "strategy",
+                  form.strategy === "ECONOMY"
+                    ? "QUALITY"
+                    : "ECONOMY",
+                )
+              }
+            >
+              Повторить подбор
+            </button>
+          </div>
+        ) : (
+          <div
+            className={`venue-grid ${catalogLoading ? "is-loading" : ""}`}
+            aria-busy={catalogLoading}
+          >
+            {displayedVenues.length === 0 && (
+              <div
+                className="catalog-empty"
+                style={{
+                  gridColumn: "1 / -1",
+                  padding: "48px 20px",
+                }}
+              >
+                <Icon name="info" size={32} />
+                <h3>По выбранным фильтрам ничего не найдено</h3>
+                <p>
+                  Попробуйте изменить район, диапазон гостей или снять некоторые фильтры оснащения.
+                </p>
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={resetAllFilters}
+                >
+                  Сбросить все фильтры ({venues.length} площадок)
+                </button>
+              </div>
+            )}
+            {displayedVenues.map((v) => (
+              <article className="venue-card" key={v.id}>
+                <div className="venue-photo">
+                  <button
+                    className="photo-open"
+                    onClick={() => setDetail(v)}
+                    aria-label={`Подробнее о ${v.name}`}
+                  >
+                    <Photo
+                      src={v.imageUrl}
+                      alt={`${v.name} — фотография площадки`}
+                    />
+                  </button>
+                  <span className="venue-city">
+                    <Icon name="pin" size={12} />
+                    Астана
+                  </span>
+                  <button
+                    className={`compare-icon ${compare.includes(v.id) ? "checked" : ""}`}
+                    onClick={() => toggleCompare(v.id)}
+                    aria-label={`${compare.includes(v.id) ? "Убрать из сравнения" : "Сравнить"} ${v.name}`}
+                    aria-pressed={compare.includes(v.id)}
+                  >
+                    <Icon
+                      name={
+                        compare.includes(v.id) ? "check" : "compare"
+                      }
+                      size={17}
+                    />
+                  </button>
+                </div>
+                <div className="venue-content">
+                  <span className="hall-name">{v.hall}</span>
+                  <button
+                    className="venue-name"
+                    onClick={() => setDetail(v)}
+                  >
+                    {v.name}
+                  </button>
+                  <p className="venue-address">
+                    <Icon name="pin" size={13} />
+                    <span className="address-text">{v.address}</span>
+                    <a
+                      href={`https://2gis.kz/astana/search/${encodeURIComponent(`${v.name} ${v.address}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="gis-badge"
+                      title={`Открыть «${v.name}» в 2GIS`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Icon2Gis size={14} />
+                      <span>2GIS ↗</span>
+                    </a>
+                  </p>
+                  <div className="venue-facts">
+                    <span>
+                      <Icon name="users" size={15} />
+                      До {v.capacity} гостей
+                    </span>
+                    <span>
+                      <Icon name="square" size={14} />
+                      {v.area == null ? "Площадь уточняется" : `${v.area} м²`}
+                    </span>
+                  </div>
+                  <div className="venue-bottom">
+                    <div>
+                      <strong>
+                        {v.price
+                          ? money(v.price)
+                          : "Цена по запросу"}
+                      </strong>
+                      <small>
+                        {v.price
+                          ? "стоимость площадки"
+                          : "уточняется у площадки"}
+                      </small>
+                    </div>
+                    <button
+                      className={`button card-button ${form.venueId === v.id ? "chosen" : ""}`}
+                      disabled={saving}
+                      onClick={() => chooseVenue(v)}
+                    >
+                      {form.venueId === v.id ? (
+                        <>
+                          <Icon name="check" size={15} />
+                          Выбрано
+                        </>
+                      ) : (
+                        <>
+                          Выбрать
+                          <Icon name="arrow" size={15} />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+            {!venues.length && !catalogLoading && (
+              <div className="catalog-empty">
+                <Icon name="search" size={32} />
+                <h3>Подходящих площадок пока нет</h3>
+                <p>
+                  Попробуйте другое название или уменьшите
+                  количество гостей.
+                </p>
+                <button
+                  className="button secondary"
+                  onClick={resetAllFilters}
+                >
+                  Сбросить все фильтры
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        <div className="catalog-note">
+          <Icon name="info" size={15} />
+          <p>
+            Вместимость указана для банкета. Свободные даты и
+            стоимость уточняйте у площадки.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <header className="site-header">
@@ -530,19 +1102,36 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              setTab("catalog");
+              setTab("planning");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             aria-label="QonaqAI, главная"
           >
-            <span className="brand-mark">q</span>Qonaq<span>AI</span>
+            <img
+              src="/qonaq-icon.png"
+              alt="QonaqAI"
+              className="brand-logo"
+            />
+            Qonaq<span>AI</span>
           </a>
           <nav aria-label="Основная навигация">
             <button
-              className={tab === "catalog" ? "nav-link active" : "nav-link"}
-              onClick={() => setTab("catalog")}
+              className={tab === "planning" ? "nav-link active" : "nav-link"}
+              onClick={() => {
+                setTab("planning");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             >
               Планирование
+            </button>
+            <button
+              className={tab === "venues" ? "nav-link active" : "nav-link"}
+              onClick={() => {
+                setTab("venues");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              Каталог
             </button>
             <button
               className={tab === "events" ? "nav-link active" : "nav-link"}
@@ -552,12 +1141,6 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
               {data.events.length > 0 && (
                 <span className="nav-count">{data.events.length}</span>
               )}
-            </button>
-            <button
-              className={tab === "account" ? "nav-link active" : "nav-link"}
-              onClick={() => setTab("account")}
-            >
-              Личный кабинет
             </button>
             <button
               className={tab === "plans" ? "nav-link active" : "nav-link"}
@@ -622,39 +1205,52 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                 </div>
               )}
             </div>
-            <div className="profile">
+            <button
+              type="button"
+              className={`profile ${tab === "account" ? "active" : ""}`}
+              onClick={() => setTab("account")}
+              aria-label="Личный кабинет"
+              title="Личный кабинет"
+            >
               <span className="avatar" aria-hidden="true">
                 {Array.from(data.profile.name)[0]?.toLocaleUpperCase("ru")}
               </span>
               <div>
                 <strong title={data.profile.name}>{data.profile.name}</strong>
-                {data.profile.mode === "DEMO" && <small>Демо-профиль</small>}
+                <small>Личный кабинет</small>
               </div>
-            </div>
-            <button
-              className="icon-button sign-out"
-              aria-label="Выйти"
-              title="Выйти"
-              onClick={signOut}
-              disabled={signingOut || saving}
-            >
-              <Icon name="logout" size={18} />
             </button>
           </div>
         </div>
       </header>
       <main className="main-shell">
-        {tab === "catalog" ? (
+        {tab === "planning" ? (
           <>
             {assistantStage === "brief" ? (
               <AssistantChat
                 key={assistantChatKey}
+                venues={allVenues}
                 request={api}
                 cache={assistantConversation}
                 onUpdate={setAssistantConversation}
                 onApply={applyAssistant}
                 onManual={startManualEntry}
                 onSessionExpired={onSessionExpired}
+              />
+            ) : assistantStage === "estimate" && serviceEvent ? (
+              <EventEstimateDetail
+                event={serviceEvent}
+                venue={allVenues.find((v) => v.id === serviceEvent.venueId)}
+                venues={allVenues}
+                eventTypes={data.eventTypes}
+                onBack={() => {
+                  setAssistantStage("brief");
+                  setServiceEvent(null);
+                }}
+                onProposal={(eventId) => setProposalTarget({ eventId })}
+                request={api}
+                onSessionExpired={onSessionExpired}
+                onUpdateEvent={handleEventUpdated}
               />
             ) : (
               <header className="assistant-flow-heading">
@@ -687,7 +1283,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                 </div>
               </header>
             )}
-            {assistantStage !== "brief" && (
+            {assistantStage !== "brief" && assistantStage !== "estimate" && (
               <section
                 className={
                   "workspace assistant-workspace assistant-" + assistantStage
@@ -877,211 +1473,27 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                     </form>
                   </aside>
                 )}
-                {assistantStage === "venues" && (
-                  <div className="catalog">
-                    <div className="catalog-title">
-                      <div>
-                        <h2>Подходящие площадки</h2>
-                      </div>
-                      <span className="result-count">
-                        {venues.length}{" "}
-                        {venues.length === 1
-                          ? "площадка"
-                          : venues.length >= 2 && venues.length <= 4
-                            ? "площадки"
-                            : "площадок"}
-                      </span>
-                    </div>
-                    <div className="catalog-toolbar">
-                      <div className="search-input">
-                        <Icon name="search" size={18} />
-                        <input
-                          aria-label="Поиск площадок"
-                          placeholder="Название площадки или адрес"
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                        />
-                        {query && (
-                          <button
-                            className="icon-button"
-                            aria-label="Очистить поиск"
-                            onClick={() => setQuery("")}
-                          >
-                            <Icon name="close" size={15} />
-                          </button>
-                        )}
-                      </div>
-                      <div
-                        className="strategy-switch"
-                        aria-label="Способ подбора"
-                      >
-                        {data.strategies.map((s) => (
-                          <button
-                            key={s.id}
-                            className={form.strategy === s.id ? "active" : ""}
-                            onClick={() => field("strategy", s.id)}
-                            title={s.description}
-                          >
-                            <Icon
-                              name={s.id === "ECONOMY" ? "leaf" : "square"}
-                              size={15}
-                            />
-                            {s.id === "ECONOMY" ? "Экономный" : "Просторнее"}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="strategy-note">
-                      <Icon name="info" size={15} />
-                      <p>
-                        {form.strategy === "ECONOMY"
-                          ? "Если цена не опубликована, сначала показываем залы с меньшим запасом мест. Стоимость нужно уточнить у площадки."
-                          : "Сначала показываем более просторные залы — по площади на одного гостя. Это не рейтинг качества обслуживания."}
-                      </p>
-                    </div>
-                    {catalogError ? (
-                      <div className="catalog-empty">
-                        <Icon name="info" size={30} />
-                        <h3>Не удалось обновить подбор</h3>
-                        <p>{catalogError}</p>
-                        <button
-                          className="button secondary"
-                          onClick={() =>
-                            field(
-                              "strategy",
-                              form.strategy === "ECONOMY"
-                                ? "QUALITY"
-                                : "ECONOMY",
-                            )
-                          }
-                        >
-                          Повторить подбор
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        className={`venue-grid ${catalogLoading ? "is-loading" : ""}`}
-                        aria-busy={catalogLoading}
-                      >
-                        {venues.map((v) => (
-                          <article className="venue-card" key={v.id}>
-                            <div className="venue-photo">
-                              <button
-                                className="photo-open"
-                                onClick={() => setDetail(v)}
-                                aria-label={`Подробнее о ${v.name}`}
-                              >
-                                <Photo
-                                  src={v.imageUrl}
-                                  alt={`${v.name} — фотография площадки`}
-                                />
-                              </button>
-                              <span className="venue-city">
-                                <Icon name="pin" size={12} />
-                                Астана
-                              </span>
-                              <button
-                                className={`compare-icon ${compare.includes(v.id) ? "checked" : ""}`}
-                                onClick={() => toggleCompare(v.id)}
-                                aria-label={`${compare.includes(v.id) ? "Убрать из сравнения" : "Сравнить"} ${v.name}`}
-                                aria-pressed={compare.includes(v.id)}
-                              >
-                                <Icon
-                                  name={
-                                    compare.includes(v.id) ? "check" : "compare"
-                                  }
-                                  size={17}
-                                />
-                              </button>
-                            </div>
-                            <div className="venue-content">
-                              <span className="hall-name">{v.hall}</span>
-                              <button
-                                className="venue-name"
-                                onClick={() => setDetail(v)}
-                              >
-                                {v.name}
-                              </button>
-                              <p className="venue-address">
-                                <Icon name="pin" size={13} />
-                                {v.address}
-                              </p>
-                              <div className="venue-facts">
-                                <span>
-                                  <Icon name="users" size={15} />
-                                  До {v.capacity} гостей
-                                </span>
-                                <span>
-                                  <Icon name="square" size={14} />
-                                  {v.area == null ? "Площадь уточняется" : `${v.area} м²`}
-                                </span>
-                              </div>
-                              <div className="venue-bottom">
-                                <div>
-                                  <strong>
-                                    {v.price
-                                      ? money(v.price)
-                                      : "Цена по запросу"}
-                                  </strong>
-                                  <small>
-                                    {v.price
-                                      ? "стоимость площадки"
-                                      : "уточняется у площадки"}
-                                  </small>
-                                </div>
-                                <button
-                                  className={`button card-button ${form.venueId === v.id ? "chosen" : ""}`}
-                                  disabled={saving}
-                                  onClick={() => chooseVenue(v)}
-                                >
-                                  {form.venueId === v.id ? (
-                                    <>
-                                      <Icon name="check" size={15} />
-                                      Выбрано
-                                    </>
-                                  ) : (
-                                    <>
-                                      Выбрать
-                                      <Icon name="arrow" size={15} />
-                                    </>
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          </article>
-                        ))}
-                        {!venues.length && !catalogLoading && (
-                          <div className="catalog-empty">
-                            <Icon name="search" size={32} />
-                            <h3>Подходящих площадок пока нет</h3>
-                            <p>
-                              Попробуйте другое название или уменьшите
-                              количество гостей.
-                            </p>
-                            <button
-                              className="button secondary"
-                              onClick={() => {
-                                setQuery("");
-                                field("guests", 80);
-                              }}
-                            >
-                              Сбросить фильтры
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <div className="catalog-note">
-                      <Icon name="info" size={15} />
-                      <p>
-                        Вместимость указана для банкета. Свободные даты и
-                        стоимость уточняйте у площадки.
-                      </p>
-                    </div>
-                  </div>
-                )}
+                {assistantStage === "venues" && renderCatalogContent()}
               </section>
             )}
+          </>
+        ) : tab === "venues" ? (
+          <>
+            <header className="assistant-flow-heading catalog-standalone-heading">
+              <div>
+                <p className="assistant-step-label">Пространства Астаны</p>
+                <h1>Каталог площадок</h1>
+                <p>
+                  Банкетные залы, отели и загородные комплексы для любого формата событий
+                </p>
+              </div>
+            </header>
+            <section
+              className="workspace assistant-workspace assistant-venues"
+              id="catalog"
+            >
+              {renderCatalogContent()}
+            </section>
           </>
         ) : tab === "account" || tab === "plans" ? (
           <AccountArea
@@ -1100,107 +1512,28 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
             onConfigure={setServiceEvent}
             onProposal={setProposalTarget}
             onNewEvent={newEvent}
+            profile={data.profile}
+            onSignOut={signOut}
+            onNavigateTab={(t) => setTab(t)}
+            onNavigateToEvents={() => setTab("events")}
           />
         ) : (
-          <section className="events-page">
-            <div className="events-heading">
-              <div>
-                <h1>Мои мероприятия</h1>
-              </div>
-              <button className="button primary" onClick={newEvent}>
-                <Icon name="plus" size={18} />
-                Создать мероприятие
-              </button>
-            </div>
-            {data.events.length ? (
-              <div className="saved-grid">
-                {data.events.map((event) => {
-                  const v = allVenues.find((v) => v.id === event.venueId);
-                  return (
-                    <article className="saved-card" key={event.id}>
-                      <div className="saved-card-top">
-                        <span className="saved-type">
-                          {data.eventTypes.find((t) => t.id === event.type)
-                            ?.label || event.type}
-                        </span>
-                        <button
-                          className="icon-button"
-                          aria-label={`Удалить ${event.title}`}
-                          onClick={() => setDeleteId(event.id)}
-                        >
-                          <Icon name="trash" size={17} />
-                        </button>
-                      </div>
-                      <h2>{event.title}</h2>
-                      <div className="saved-details">
-                        <span>
-                          <Icon name="calendar" size={16} />
-                          {humanDate(event.date)}
-                        </span>
-                        <span>
-                          <Icon name="users" size={16} />
-                          {event.guests} гостей
-                        </span>
-                      </div>
-                      <div className="saved-budget">
-                        <span>Бюджет мероприятия</span>
-                        <strong>{money(event.budget)}</strong>
-                      </div>
-                      {v ? (
-                        <div className="saved-venue">
-                          <Photo src={v.imageUrl} alt={v.name} />
-                          <div>
-                            <small>Выбранная площадка</small>
-                            <strong>{v.name}</strong>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="no-venue">
-                          <Icon name="pin" size={17} />
-                          Площадка пока не выбрана
-                        </div>
-                      )}
-                      <button
-                        className="button secondary full"
-                        onClick={() => editEvent(event)}
-                      >
-                        <Icon name="edit" size={16} />
-                        Продолжить планирование
-                      </button>
-                      <button
-                        className="button secondary full service-open"
-                        onClick={() => setServiceEvent(event)}
-                      >
-                        Настроить пакет и смету
-                      </button>
-                      <button
-                        className="button secondary full service-open"
-                        onClick={() => setProposalTarget({ eventId: event.id })}
-                      >
-                        Подготовить предложение
-                      </button>
-                    </article>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="events-empty">
-                <span className="empty-illustration">
-                  <Icon name="calendar" size={42} />
-                </span>
-                <h2>Пока нет мероприятий</h2>
-                <button className="button primary" onClick={newEvent}>
-                  Создать мероприятие
-                  <Icon name="arrow" size={18} />
-                </button>
-              </div>
-            )}
-            <BookingHistory request={api} onSessionExpired={onSessionExpired} />
-          </section>
+          <EventsScreen
+            events={data.events}
+            eventTypes={data.eventTypes}
+            venues={allVenues}
+            onNewEvent={newEvent}
+            onEditEvent={editEvent}
+            onConfigure={setServiceEvent}
+            onProposal={(eventId) => setProposalTarget({ eventId })}
+            onDelete={(id) => setDeleteId(id)}
+            request={api}
+            onSessionExpired={onSessionExpired}
+            onUpdateEvent={handleEventUpdated}
+          />
         )}
       </main>
-      {tab === "catalog" &&
-        assistantStage === "venues" &&
+      {((tab === "planning" && assistantStage === "venues") || tab === "venues") &&
         compare.length > 0 && (
           <div className="compare-bar">
             <span className="compare-bar-icon">
@@ -1245,7 +1578,17 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
             <p className="detail-description">{detail.description}</p>
             <p className="detail-address">
               <Icon name="pin" size={17} />
-              {detail.address}
+              <span>{detail.address}</span>
+              <a
+                href={`https://2gis.kz/astana/search/${encodeURIComponent(`${detail.name} ${detail.address}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="gis-badge"
+                title={`Посмотреть «${detail.name}» в 2GIS Карты`}
+              >
+                <Icon2Gis size={14} />
+                <span>2GIS ↗</span>
+              </a>
             </p>
             <div className="detail-facts">
               <div>
@@ -1337,7 +1680,19 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                   <dt>Стоимость</dt>
                   <dd>{v.price ? money(v.price) : "По запросу"}</dd>
                   <dt>Адрес</dt>
-                  <dd>{v.address}</dd>
+                  <dd>
+                    {v.address}{" "}
+                    <a
+                      href={`https://2gis.kz/astana/search/${encodeURIComponent(`${v.name} ${v.address}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="gis-badge"
+                      title={`Открыть «${v.name}» в 2GIS`}
+                    >
+                      <Icon2Gis size={14} />
+                      <span>2GIS ↗</span>
+                    </a>
+                  </dd>
                 </dl>
                 <button
                   className="button primary full"
@@ -1355,7 +1710,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
           </p>
         </Modal>
       )}
-      {serviceEvent && (
+      {serviceEvent && assistantStage !== "estimate" && (
         <Modal
           title="Пакет, смета и бронирование"
           heading={serviceEvent.title}
