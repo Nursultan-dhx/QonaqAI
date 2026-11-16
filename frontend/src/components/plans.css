@@ -321,6 +321,11 @@
   .qplans-card.pro {
     padding-top: 52px;
   }
+  .qplans-price {
+    flex-wrap: wrap;
+    white-space: nowrap;
+    row-gap: 4px;
+  }
   .qplans-value {
     min-height: 0;
     margin-bottom: 22px;

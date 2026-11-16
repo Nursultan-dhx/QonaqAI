@@ -1155,6 +1155,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
               Астана
             </span>
             <div className="notification-wrap">
+              {/* Уведомления временно скрыты.
               <button
                 className={`icon-button notification-button ${showNotifications ? "selected" : ""}`}
                 aria-label="Уведомления"
@@ -1166,6 +1167,7 @@ function Planner({ initialData, onSessionExpired, onLogout }) {
                   <span className="notification-dot" />
                 )}
               </button>
+              */}
               {showNotifications && (
                 <div className="notification-panel">
                   <div className="notification-title">

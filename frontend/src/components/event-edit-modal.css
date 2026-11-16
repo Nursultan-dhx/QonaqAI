@@ -321,10 +321,35 @@
     gap: 14px;
   }
   .eem-container {
-    max-height: 94vh;
+    max-height: calc(100dvh - 32px);
   }
   .eem-header,
   .eem-form {
     padding: 16px 20px;
+  }
+  .eem-header {
+    gap: 12px;
+  }
+  .eem-header > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .eem-close-btn {
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .eem-form input,
+  .eem-form select,
+  .eem-form textarea {
+    font-size: 16px;
+  }
+  .eem-footer {
+    flex-wrap: wrap;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .eem-btn {
+    flex: 1 1 auto;
+    min-height: 44px;
   }
 }

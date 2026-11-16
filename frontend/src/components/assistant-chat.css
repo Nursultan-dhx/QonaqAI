@@ -963,11 +963,12 @@
     width: 100%;
   }
   .qchat-hero h1 {
-    font-size: 38px;
+    font-size: clamp(28px, 8.5vw, 38px);
     letter-spacing: -1.2px;
   }
   .qchat-hero > p {
     font-size: 14px;
+    max-height: none;
   }
   .qchat-turn {
     gap: 10px;
@@ -992,6 +993,9 @@
   .qchat-chips button {
     font-size: 13px;
     padding: 8px 14px;
+    min-height: 44px;
+    max-width: 100%;
+    text-align: left;
   }
   .qchat-composer {
     padding: 14px 16px 10px;
@@ -1001,6 +1005,19 @@
     max-width: 190px;
     line-height: 1.4;
     font-size: 12px;
+    min-width: 0;
+  }
+  .qchat-composer button {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+  }
+  .qchat.has-conversation {
+    min-height: calc(100dvh - 108px);
+  }
+  .qchat.has-conversation .qchat-dock {
+    z-index: 30;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
   .qchat-turn.user {
     margin-left: 25px;
@@ -1013,12 +1030,12 @@
   }
   .qchat-venue {
     display: grid;
-    grid-template-columns: 125px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
   .qchat-venue-photo {
-    height: 100%;
-    aspect-ratio: auto;
-    min-height: 180px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
   }
   .qchat-venue-photo > span {
     left: 8px;
@@ -1028,6 +1045,8 @@
   }
   .qchat-venue-info {
     padding: 14px;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .qchat-venue h3 {
     font-size: 18px;

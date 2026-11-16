@@ -841,6 +841,12 @@
 }
 
 @media (max-width: 600px) {
+  .account-area {
+    padding-top: 24px;
+  }
+  .account-shell {
+    padding-inline: 0;
+  }
   .account-header {
     flex-direction: column;
     align-items: flex-start;
@@ -857,5 +863,22 @@
 
   .account-card {
     padding: 20px;
+  }
+  .account-card,
+  .account-kpi-card,
+  .account-proposal-card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .plan-card-header,
+  .prop-card-top,
+  .prop-amount-block {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .account-btn {
+    min-height: 44px;
+    white-space: normal;
+    justify-content: center;
   }
 }

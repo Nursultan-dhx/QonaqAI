@@ -558,6 +558,45 @@
 }
 
 @media (max-width: 600px) {
+  .proposal-print-container {
+    height: calc(100dvh - 16px);
+  }
+  .proposal-print-toolbar {
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+  .toolbar-left {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .toolbar-left strong {
+    max-width: none;
+  }
+  .toolbar-actions {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+  .toolbar-actions .button {
+    min-height: 44px;
+    white-space: normal;
+    flex: 1 1 160px;
+  }
+  .toolbar-actions .close-btn {
+    min-width: 44px;
+    min-height: 44px;
+    margin-left: auto;
+  }
+  .proposal-print-scroll-wrap {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    overscroll-behavior-y: contain;
+  }
+  .doc-header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .doc-table-section {
+    overflow-x: auto;
+  }
   .doc-cards-grid {
     grid-template-columns: 1fr;
   }

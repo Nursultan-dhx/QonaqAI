@@ -2824,3 +2824,139 @@ html {
     min-width: auto;
   }
 }
+
+/* Keep mobile navigation inside the viewport without compressing its labels. */
+@media (max-width: 1100px) {
+  /* Release the animation transform so fixed dialogs use the viewport. */
+  .ql-app-enter-wrap {
+    animation-fill-mode: backwards;
+  }
+  .modal-backdrop {
+    z-index: 300;
+  }
+}
+
+@media (min-width: 801px) and (max-width: 1100px) {
+  .header-inner {
+    gap: 16px;
+  }
+  .profile > div {
+    display: none;
+  }
+  .profile {
+    padding-left: 0;
+    border: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .site-header {
+    height: auto;
+  }
+  .header-inner {
+    height: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    padding: 8px 16px;
+  }
+  .brand {
+    min-height: 40px;
+    justify-self: start;
+  }
+  .header-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .site-header nav {
+    grid-column: 1 / -1;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 4px;
+  }
+  .nav-link {
+    flex-shrink: 0;
+    min-height: 44px;
+  }
+  .profile {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-shell {
+    padding-inline: 16px;
+  }
+  /* 16px fields avoid automatic zoom when focusing forms on iOS. */
+  .main-shell input,
+  .main-shell select,
+  .main-shell textarea,
+  .modal input,
+  .modal select,
+  .modal textarea {
+    font-size: 16px;
+  }
+  .catalog,
+  .catalog-toolbar > *,
+  .catalog-pills-list {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .catalog-toolbar {
+    align-items: stretch;
+  }
+  .catalog-toolbar .search-input {
+    flex-basis: auto;
+    width: 100%;
+  }
+  .catalog-sort-select-wrap {
+    height: auto;
+    min-height: 44px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+  }
+  .catalog-sort-select {
+    flex: 1 1 150px;
+  }
+  .catalog-filters-box {
+    padding: 16px;
+  }
+  .catalog-pill {
+    min-height: 44px;
+    padding-inline: 12px;
+  }
+  .strategy-switch {
+    flex-wrap: wrap;
+  }
+  .strategy-switch button {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .venue-facts,
+  .venue-bottom {
+    flex-wrap: wrap;
+  }
+  .button.card-button,
+  .compare-icon,
+  .modal-heading .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .compare-bar {
+    flex-wrap: wrap;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .modal {
+    overscroll-behavior-y: contain;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .toast {
+    top: 120px;
+  }
+}

@@ -1078,6 +1078,8 @@
 @media (max-width: 900px) {
   .eed-root {
     padding: 20px 16px 120px;
+    /* A retained transform would anchor the fixed total bar to this page. */
+    animation-fill-mode: backwards;
   }
 
   .eed-kpi-grid {
@@ -1149,5 +1151,87 @@
   .eed-sticky-btn {
     flex: 1;
     justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .eed-root {
+    padding: 24px 0 calc(220px + env(safe-area-inset-bottom));
+  }
+  .eed-nav,
+  .eed-actions,
+  .eed-venue-top,
+  .eed-sticky-total-block,
+  .eed-sticky-btns {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .eed-nav {
+    align-items: flex-start;
+  }
+  .eed-actions {
+    width: 100%;
+  }
+  .eed-action-btn,
+  .eed-sticky-btn {
+    min-height: 44px;
+    white-space: normal;
+    justify-content: center;
+    flex: 1 1 140px;
+  }
+  .eed-title,
+  .eed-venue-info {
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .eed-venue-top > div {
+    min-width: 0;
+  }
+  .eed-venue-specs {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .eed-spec-price {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+  .eed-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .eed-kpi-card,
+  .eed-venue-info,
+  .eed-timing-card {
+    padding: 18px 16px;
+    min-width: 0;
+  }
+  .eed-venue-empty-alert {
+    flex-wrap: wrap;
+    padding: 18px 16px;
+    gap: 14px;
+  }
+  .eed-venue-empty-alert button {
+    margin-left: 0;
+    width: 100%;
+  }
+  .eed-timing-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .eed-b-field input {
+    font-size: 16px;
+  }
+  .eed-table-footer {
+    flex-wrap: wrap;
+    padding-inline: 16px;
+    gap: 8px;
+  }
+  .eed-sticky-bar {
+    padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 420px) {
+  .eed-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
